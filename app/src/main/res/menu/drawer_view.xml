@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+
+    <group android:checkableBehavior="single">
+
+        <!-- -->
+        <item
+            android:id="@+id/nav_most"
+            android:icon="@drawable/ic_live_tv_black_24dp"
+            android:checked="true"
+            android:title="@string/most" />
+        <item
+            android:id="@+id/nav_top"
+            android:icon="@drawable/ic_grade_black_24dp"
+            android:title="@string/top" />
+        <item
+            android:id="@+id/nav_fav"
+            android:icon="@drawable/ic_favorite_black_24dp"
+            android:title="@string/favorites" />
+        <item
+            android:id="@+id/nav_log"
+            android:icon="@drawable/ic_person_black_24dp"
+            android:title="@string/login" />
+
+    </group>
+</menu>

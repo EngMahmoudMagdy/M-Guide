@@ -1,0 +1,28 @@
+<resources>
+    <string name="app_name">M-Guide</string>
+    <string name="action_settings">Settings</string>
+    <string name="action_refresh" translatable="false">Refresh</string>
+    <string name="title_activity_settings">SettingsActivity</string>
+    <string name="pref_kind_most_popular">movie/popular?</string>
+    <string name="pref_kind_top_rated">movie/top_rated?</string>
+    <string name="pref_kind_favorites">favorites</string>
+    <string name="pref_kind_label_most_popular">Most Popular</string>
+    <string name="pref_kind_label_top_rated">Top Rated</string>
+    <string name="pref_kind_label_favorites">Favorites</string>
+    <string name="pref_kind_label">Kinds</string>
+    <string name="pref_kind_key" translatable="false">kind</string>
+    <string name="title_activity_detail">DetailActivity</string>
+    <string name="title_activity_setting">SettingActivity</string>
+    <string name="widget_cd" translatable="false">M-Guide widget</string>
+    <string name="widget_label" translatable="false">M-Guide</string>
+    <string name="trailers" translatable="false">Trailers: </string>
+    <string name="no_movies" translatable="false">There is no Favorite movies</string>
+    <string name="profile">M-Guide Profile picture</string>
+    <string name="favorites">Favorites</string>
+    <string name="logout">Log out</string>
+    <string name="top">Top Rated</string>
+    <string name="most">Most Popular</string>
+    <string name="login">Log in</string>
+    <string name="drawer_open">Open navigation drawer</string>
+    <string name="drawer_close">Close navigation drawer</string>
+</resources>

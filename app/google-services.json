@@ -1,0 +1,55 @@
+{
+  "project_info": {
+    "project_number": "48720760944",
+    "firebase_url": "https://m-guide-696b3.firebaseio.com",
+    "project_id": "m-guide-696b3",
+    "storage_bucket": "m-guide-696b3.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:48720760944:android:de903280a52835bf",
+        "android_client_info": {
+          "package_name": "com.magdy.mguide"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "48720760944-utkmu8ea7jbavirnck3v8831uvem26ui.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.magdy.mguide",
+            "certificate_hash": "491f81f19c50be6960ce80031cfeb0f6a2a086ee"
+          }
+        },
+        {
+          "client_id": "48720760944-s6flro4nq6kfm7qqccvsocrs52g1fa3p.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAgCMuao8bRG6R_LCWvCC11-5kAw1Xaziw"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 2,
+          "other_platform_oauth_client": [
+            {
+              "client_id": "48720760944-s6flro4nq6kfm7qqccvsocrs52g1fa3p.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

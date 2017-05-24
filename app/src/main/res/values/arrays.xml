@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string-array name="pref_kind_options">
+        <item>@string/pref_kind_label_most_popular</item>
+        <item>@string/pref_kind_label_top_rated</item>
+        <item>@string/pref_kind_label_favorites</item>
+    </string-array>
+
+    <string-array name="pref_kind_values">
+        <item>@string/pref_kind_most_popular</item>
+        <item>@string/pref_kind_top_rated</item>
+        <item>@string/pref_kind_favorites</item>
+    </string-array>
+</resources>
