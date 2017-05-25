@@ -1,58 +1,63 @@
 package com.magdy.mguide;
 
-import android.os.Parcel;
-import android.os.Parcelable;
+import java.io.Serializable;
 
 
-public class Information implements Parcelable {
+public class Information implements Serializable {
 
-
-
-
-    public String PIC ; //="http://i.imgur.com/Z3QjilA.jpg" ;
+    public String PIC ;
     public String OverView ;
     public String Date ;
     public String Title ;
     public String Vote ;
     public int id;
 
-    protected Information(Parcel in) {
-        PIC = in.readString();
-        OverView = in.readString();
-        Date = in.readString();
-        Title = in.readString();
-        Vote = in.readString();
-        id = in.readInt();
+    public void setDate(String date) {
+        Date = date;
     }
 
-    public static final Creator<Information> CREATOR = new Creator<Information>() {
-        @Override
-        public Information createFromParcel(Parcel in) {
-            return new Information(in);
-        }
-
-        @Override
-        public Information[] newArray(int size) {
-            return new Information[size];
-        }
-    };
-
-    public Information() {
-
+    public void setId(int id) {
+        this.id = id;
     }
 
-    @Override
-    public int describeContents() {
-        return 0;
+    public void setOverView(String overView) {
+        OverView = overView;
     }
 
-    @Override
-    public void writeToParcel(Parcel dest, int flags) {
-        dest.writeString(PIC);
-        dest.writeString(OverView);
-        dest.writeString(Date);
-        dest.writeString(Title);
-        dest.writeString(Vote);
-        dest.writeInt(id);
+    public void setPIC(String PIC) {
+        this.PIC = PIC;
     }
+
+    public void setTitle(String title) {
+        Title = title;
+    }
+
+    public void setVote(String vote) {
+        Vote = vote;
+    }
+
+    public int getId() {
+        return id;
+    }
+
+    public String getDate() {
+        return Date;
+    }
+
+    public String getOverView() {
+        return OverView;
+    }
+
+    public String getPIC() {
+        return PIC;
+    }
+
+    public String getTitle() {
+        return Title;
+    }
+
+    public String getVote() {
+        return Vote;
+    }
+
 }

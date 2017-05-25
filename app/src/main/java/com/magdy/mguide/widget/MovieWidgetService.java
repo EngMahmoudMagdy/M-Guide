@@ -4,11 +4,10 @@ import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.database.Cursor;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.graphics.drawable.Drawable;
-import android.os.AsyncTask;
+import android.net.Uri;
+
 import android.os.Binder;
-import android.util.Log;
+
 import android.widget.AdapterView;
 import android.widget.RemoteViews;
 import android.widget.RemoteViewsService;
@@ -17,9 +16,10 @@ import com.magdy.mguide.Data.Contract;
 import com.magdy.mguide.Information;
 import com.magdy.mguide.R;
 import com.squareup.picasso.Picasso;
-import com.squareup.picasso.Target;
 
-import java.io.InputStream;
+import java.io.IOException;
+
+
 
 /**
  * Created by engma on 5/23/2017.
@@ -33,6 +33,7 @@ public class MovieWidgetService extends RemoteViewsService {
 
     private class ListRemoteViewFactory implements RemoteViewsFactory {
 
+         static final String MOVIE_PIC_BASE_URL = "http://image.tmdb.org/t/p/w185//";
         private Cursor data = null;
         @Override
         public void onCreate() {
@@ -63,8 +64,6 @@ public class MovieWidgetService extends RemoteViewsService {
             Binder.restoreCallingIdentity(identityToken);
         }
 
-
-
         @Override
         public int getCount() {
             return  data == null ? 0 : data.getCount();
@@ -81,45 +80,27 @@ public class MovieWidgetService extends RemoteViewsService {
             final RemoteViews remoteViews = new RemoteViews(getBaseContext().getPackageName(), R.layout.widget_grid_item);
 
             Information movie1 = new Information();
-            movie1.PIC = data.getString(Contract.Movie.POSITION_PIC_LINK);
-            movie1.Title= data.getString(Contract.Movie.POSITION_TITLE);
-            movie1.OverView= data.getString(Contract.Movie.POSITION_OVERVIEW);
-            movie1.Vote= data.getString(Contract.Movie.POSITION_RATE);
-            movie1.Date= data.getString(Contract.Movie.POSITION_DATE);
-            movie1.id= data.getInt(Contract.Movie.POSITION_MOVIE_ID);
-            remoteViews.setTextViewText(R.id.widget_image,movie1.Title);
+            movie1.setPIC( data.getString(Contract.Movie.POSITION_PIC_LINK));
+            movie1.setTitle(data.getString(Contract.Movie.POSITION_TITLE));
+            movie1.setOverView(data.getString(Contract.Movie.POSITION_OVERVIEW));
+            movie1.setVote(data.getString(Contract.Movie.POSITION_RATE));
+            movie1.setDate(data.getString(Contract.Movie.POSITION_DATE));
+            movie1.setId(data.getInt(Contract.Movie.POSITION_MOVIE_ID));
 
-
-            /*DownloadImageTask downloadImageTask = new DownloadImageTask(remoteViews);
-            downloadImageTask.execute(movie1.PIC);*/
-
-            /*Picasso.with(getBaseContext())
-                    .load(movie1.PIC)
-                    .placeholder(R.drawable.placeholder)
-                    .fit()
-                    .into(new Target() {
-                        @Override
-                        public void onBitmapLoaded(Bitmap bitmap, Picasso.LoadedFrom from) {
-                            remoteViews.setImageViewBitmap(R.id.widget_image,bitmap);
-                        }
-                        @Override
-                        public void onBitmapFailed(Drawable errorDrawable) {
-                            remoteViews.setImageViewResource(R.id.widget_image,R.drawable.placeholder);
-                        }
-                        @Override
-                        public void onPrepareLoad(Drawable placeHolderDrawable) {
-
-                        }
-                    });*/
-
+            Uri imageUri = Uri.parse(MOVIE_PIC_BASE_URL+movie1.getPIC());
+            Bitmap bitmap;
+            try {
+                bitmap =  Picasso.with(getApplicationContext())
+                        .load(imageUri)
+                        .get();
+                remoteViews.setImageViewBitmap(R.id.widget_image,bitmap);
+            } catch (IOException e) {
+                e.printStackTrace();
+                remoteViews.setImageViewResource(R.id.widget_image,R.drawable.placeholder);
+            }
 
             final Intent i = new Intent();
-            i.putExtra(Contract.Movie.COLUMN_MOVIE_ID, movie1.id);
-            i.putExtra(Contract.Movie.COLUMN_TITLE, movie1.Title);
-            i.putExtra(Contract.Movie.COLUMN_OVERVIEW,movie1.OverView);
-            i.putExtra(Contract.Movie.COLUMN_DATE,movie1.Date);
-            i.putExtra(Contract.Movie.COLUMN_PIC_LINK,movie1.PIC);
-            i.putExtra(Contract.Movie.COLUMN_RATE, movie1.Vote);
+            i.putExtra(Contract.Movie.TABLE_NAME,movie1);
             remoteViews.setOnClickFillInIntent(R.id.grid_item, i);
             return remoteViews;
         }
@@ -144,39 +125,4 @@ public class MovieWidgetService extends RemoteViewsService {
             return true;
         }
     }
-    private class DownloadImageTask extends AsyncTask<String,Void,Bitmap>
-    {
-        RemoteViews remoteViews ;
-        protected DownloadImageTask(RemoteViews rviewa )
-        {
-            remoteViews = rviewa ;
-        }
-
-        @Override
-        protected Bitmap doInBackground(String... strings) {
-            try {
-                InputStream in = new java.net.URL(strings[0]).openStream();
-                Bitmap bitmap = BitmapFactory.decodeStream(in);
-                Log.v("ImageDownload", "download succeeded");
-                Log.v("ImageDownload", "Param 0 is: " + strings[0]);
-                return bitmap;
-                //NOTE:  it is not thread-safe to set the ImageView from inside this method.  It must be done in onPostExecute()
-            } catch (Exception e) {
-                Log.e("ImageDownload", "Download failed: " + e.getMessage());
-            }
-            return  null;
-        }
-
-        @Override
-        protected void onPostExecute(Bitmap bitmap) {
-            super.onPostExecute(bitmap);
-            if(bitmap==null)
-                remoteViews.setImageViewResource(R.id.widget_image,R.drawable.placeholder);
-            else
-            {
-                remoteViews.setImageViewBitmap(R.id.widget_image,bitmap);
-            }
-        }
-    }
-
 }

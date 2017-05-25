@@ -17,6 +17,7 @@
     <string name="widget_label" translatable="false">M-Guide</string>
     <string name="trailers" translatable="false">Trailers: </string>
     <string name="no_movies" translatable="false">There is no Favorite movies</string>
+    <string name="no_movies_inter" translatable="false">There is no Internet</string>
     <string name="profile">M-Guide Profile picture</string>
     <string name="favorites">Favorites</string>
     <string name="logout">Log out</string>
@@ -25,4 +26,20 @@
     <string name="login">Log in</string>
     <string name="drawer_open">Open navigation drawer</string>
     <string name="drawer_close">Close navigation drawer</string>
+    <string name="action_add_to_fav">Add to Favorites</string>
+    <string name="reviews">Reviews:</string>
+    <string name="our_review">Users Review:</string>
+    <string name="add_review">Add Review</string>
+    <string name="email_hint">Email</string>
+    <string name="pass_hint">Password</string>
+    <string name="or">OR</string>
+    <string name="sign_up">Sign up</string>
+    <string name="your_name">your name</string>
+    <string name="register">Register</string>
+    <string name="read_more"><u>Read more</u></string>
+    <string name="submit">Submit</string>
+    <string name="ur_review">your review</string>
+    <string name="review_add">Review added</string>
+    <string name="registering">Registering</string>
+
 </resources>

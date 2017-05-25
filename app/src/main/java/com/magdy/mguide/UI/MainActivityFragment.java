@@ -2,12 +2,10 @@ package com.magdy.mguide.UI;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
-import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.preference.PreferenceManager;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
@@ -15,10 +13,9 @@ import android.support.v4.content.Loader;
 import android.util.Log;
 import android.view.LayoutInflater;
 
-import android.view.MenuItem;
+
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
 import android.widget.BaseAdapter;
 import android.widget.GridView;
 import android.widget.ImageView;
@@ -51,8 +48,8 @@ import java.util.List;
 public class MainActivityFragment extends Fragment implements LoaderManager.LoaderCallbacks<Cursor>{
 
 
-    public static final String MOVIE_PIC_BASE_URL = "http://image.tmdb.org/t/p/w185//";
     private GridView grid ;
+    private TextView errorText ;
     private ImageAdapter imgrid  ;
     public List<Information> MovieData2  = new ArrayList<Information>();
     public List<String> MovieTitle  = new ArrayList<String>();
@@ -60,6 +57,8 @@ public class MainActivityFragment extends Fragment implements LoaderManager.Load
     View rootView;
     Context mContext ;
     private int mType ;
+    private final static String TYPE_KEY = "type";
+
     public MainActivityFragment()
     {
 
@@ -75,11 +74,29 @@ public class MainActivityFragment extends Fragment implements LoaderManager.Load
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState){
-        Log.w("creating Main fragment ", " here");
         rootView = inflater.inflate(R.layout.fragment_main, container, false);
+
+
         grid = (GridView) rootView.findViewById(R.id.grid1);
+        errorText = (TextView)rootView.findViewById(R.id.no_internet);
+
         mContext = getActivity() ;
+        imgrid = new ImageAdapter(getActivity(), MovieData2);
+        grid.setAdapter(imgrid);
+
+
+        if(savedInstanceState!=null) {
+            mType = savedInstanceState.getInt(TYPE_KEY);
+        }
+
+
         return rootView ;
+    }
+
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putInt(TYPE_KEY,mType);
     }
 
     public void updatePage() {
@@ -117,22 +134,27 @@ public class MainActivityFragment extends Fragment implements LoaderManager.Load
     @Override
     public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
         MovieData2.clear();
-        if(data!=null) {
-
-            Information movie1 = new Information();
-            for (int i = 0; i < data.getCount(); i++) {
-                data.moveToPosition(i);
-                movie1.PIC = data.getString(Contract.Movie.POSITION_PIC_LINK);
-                movie1.Title= data.getString(Contract.Movie.POSITION_TITLE);
-                movie1.OverView= data.getString(Contract.Movie.POSITION_OVERVIEW);
-                movie1.Vote= data.getString(Contract.Movie.POSITION_RATE);
-                movie1.Date= data.getString(Contract.Movie.POSITION_DATE);
-                movie1.id= data.getInt(Contract.Movie.POSITION_MOVIE_ID);
-                MovieData2.add(movie1);
-            }
-            imgrid = new ImageAdapter(getActivity(), MovieData2);
-            grid.setAdapter(imgrid);
+        if(data==null)
+        {
+            errorText.setText(R.string.no_movies);
+            errorText.setVisibility(View.VISIBLE);
         }
+        else{
+            for (int i = 0; i < data.getCount(); i++) {
+                Information movie1 = new Information();
+                data.moveToPosition(i);
+                movie1.setPIC( data.getString(Contract.Movie.POSITION_PIC_LINK));
+                movie1.setTitle(data.getString(Contract.Movie.POSITION_TITLE));
+                movie1.setOverView(data.getString(Contract.Movie.POSITION_OVERVIEW));
+                movie1.setVote(data.getString(Contract.Movie.POSITION_RATE));
+                movie1.setDate(data.getString(Contract.Movie.POSITION_DATE));
+                movie1.setId(data.getInt(Contract.Movie.POSITION_MOVIE_ID));
+                MovieData2.add(movie1);
+                errorText.setVisibility(View.GONE);
+            }
+            imgrid.notifyDataSetChanged();
+        }
+
 
     }
 
@@ -142,7 +164,7 @@ public class MainActivityFragment extends Fragment implements LoaderManager.Load
     }
 
 
-    public class FetchMoviesTask extends AsyncTask<String ,Void ,List<Information> > {
+    private class FetchMoviesTask extends AsyncTask<String ,Void ,List<Information> > {
 
         private final String LOG_TAG = FetchMoviesTask.class.getSimpleName() ;
         /**
@@ -168,13 +190,12 @@ public class MainActivityFragment extends Fragment implements LoaderManager.Load
 
             JSONObject MoviesJson = new JSONObject(MoviesJsonStr);
             JSONArray MoviesArray = MoviesJson.getJSONArray(TMDB_RESULTS);
-            List<Information> MovieData  = new ArrayList<Information>();
+            List<Information> MovieData  = new ArrayList<>();
             MovieData.clear() ;
-            //MovieData2.clear() ;
             for(int i = 0; i < MoviesArray.length(); i++) {
                 Information movie1 = new Information();
                 JSONObject Movie = MoviesArray.getJSONObject(i);
-                movie1.PIC = MOVIE_PIC_BASE_URL+Movie.getString(TMDB_PIC);
+                movie1.PIC = Movie.getString(TMDB_PIC);
 
                 MovieTitle.add( Movie.getString(TMDB_Title));
                 movie1.Title= Movie.getString(TMDB_Title);
@@ -227,7 +248,7 @@ public class MainActivityFragment extends Fragment implements LoaderManager.Load
 
                 // Read the input stream into a String
                 InputStream inputStream = urlConnection.getInputStream();
-                StringBuffer buffer = new StringBuffer();
+                StringBuilder buffer = new StringBuilder();
                 if (inputStream == null) {
                     // Nothing to do.
                     return null;
@@ -239,7 +260,7 @@ public class MainActivityFragment extends Fragment implements LoaderManager.Load
                     // Since it's JSON, adding a newline isn't necessary (it won't affect parsing)
                     // But it does make debugging a *lot* easier if you print out the completed
                     // buffer for debugging.
-                    buffer.append(line + "\n");
+                    buffer.append(line).append("\n");
                 }
 
                 if (buffer.length() == 0) {
@@ -288,22 +309,27 @@ public class MainActivityFragment extends Fragment implements LoaderManager.Load
         protected void onPostExecute(List <Information> result)
         {
             MovieData2.clear();
-            if(result != null)
+            if(result == null)
+            {
+                errorText.setText(R.string.no_movies_inter);
+                errorText.setVisibility(View.VISIBLE);
+            }
+            else
             {
                 for(int i = 0 ; i < result.size() ; i++)
                 {
                     MovieData2.add(result.get(i));
                 }
+                errorText.setVisibility(View.GONE);
             }
             // making the grid here :
-            imgrid = new ImageAdapter(getActivity() , MovieData2);
+            imgrid = new ImageAdapter(getActivity(), MovieData2);
             grid.setAdapter(imgrid);
-            Log.v("Grid is made here","grid");
-
+            imgrid.notifyDataSetChanged();
 
         }
 
-    } ;
+    }
 
     //setter for listener
     public void setListInfoListenter(ListInfoListener lsn)
@@ -315,12 +341,13 @@ public class MainActivityFragment extends Fragment implements LoaderManager.Load
 
     //the custom adapter
 
-    public class ImageAdapter extends BaseAdapter
+    private class ImageAdapter extends BaseAdapter
     {
-        List <Information> list = new ArrayList<Information> ();
+         static final String MOVIE_PIC_BASE_URL = "http://image.tmdb.org/t/p/w185//";
+        List <Information> list = new ArrayList<> ();
         private Context mContext ;
 //        private Cursor cursor;
-        public ImageAdapter (Context c , List <Information >s)
+         ImageAdapter (Context c , List <Information >s)
         {
             mContext = c ;
             list =s ;
@@ -361,7 +388,7 @@ public class MainActivityFragment extends Fragment implements LoaderManager.Load
             TextView textView = (TextView) v.findViewById(R.id.movie_title);
             textView.setText(list.get(position).Title);
             Picasso.with(mContext)
-                    .load(list.get(position).PIC)
+                    .load(MOVIE_PIC_BASE_URL+list.get(position).PIC)
                     .placeholder(R.drawable.placeholder)
                     .fit()
                     .into(view);

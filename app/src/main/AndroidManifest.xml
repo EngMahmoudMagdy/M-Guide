@@ -2,8 +2,6 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.magdy.mguide">
 
-
-
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.Manifest.permission.RECEIVE_BOOT_COMPLETED" />
@@ -21,10 +19,16 @@
 
         <activity
             android:name=".UI.MainActivity"
-            android:screenOrientation="portrait"
-            android:configChanges="orientation|keyboardHidden"
             android:label="@string/app_name"
             android:theme="@style/AppTheme">
+
+            <intent-filter>
+                <action android:name="android.net.conn.CONNECTIVITY_CHANGE" />
+            </intent-filter>
+            <!--
+                 android:configChanges="orientation|keyboardHidden"
+                        android:screenOrientation="portrait"
+            -->
 
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -32,44 +36,38 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
         <receiver
             android:name=".widget.MovieWidgetProvider"
             android:label="@string/widget_label">
             <intent-filter>
-                <action android:name="android.appwidget.action.APPWIDGET_UPDATE"/>
-                <action android:name="com.magdy.mguide.ACTION_DATA_UPDATED"/>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+                <action android:name="com.magdy.mguide.ACTION_DATA_UPDATED" />
             </intent-filter>
+
             <meta-data
                 android:name="android.appwidget.provider"
-                android:resource="@xml/movie_widget_provider_info"/>
+                android:resource="@xml/movie_widget_provider_info" />
         </receiver>
+
         <service
             android:name=".widget.MovieWidgetService"
             android:exported="false"
-            android:permission="android.permission.BIND_REMOTEVIEWS"/>
+            android:permission="android.permission.BIND_REMOTEVIEWS" />
 
         <activity
             android:name=".UI.DetailActivity"
+            android:configChanges="orientation|keyboardHidden"
             android:label="@string/title_activity_detail"
-            android:screenOrientation="portrait"
-            android:configChanges="orientation|keyboardHidden"
-            android:parentActivityName=".UI.MainActivity"
-
-        >
-            <meta-data
-                android:name="android.support.PARENT_ACTIVITY"
-                android:value="com.magdy.mguide.UI.MainActivity" />
-        </activity>
-        <activity
-            android:name=".UI.SettingsActivity"
-            android:label="@string/title_activity_settings"
-            android:screenOrientation="portrait"
-            android:configChanges="orientation|keyboardHidden"
             android:parentActivityName=".UI.MainActivity">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.magdy.mguide.UI.MainActivity" />
         </activity>
+        <activity android:name=".UI.SignInActivity" />
+        <activity android:name=".UI.RegisterActivity" />
+        <activity android:name=".UI.ReviewEntryActivity" />
+        <activity android:name=".UI.ReviewDetailActivity"></activity>
     </application>
 
 </manifest>

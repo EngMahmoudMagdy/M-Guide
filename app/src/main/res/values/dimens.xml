@@ -6,4 +6,8 @@
     <dimen name="widget_min_height">180dp</dimen>
     <dimen name="widget_min_resize_width">216dp</dimen>
     <dimen name="widget_min_resize_height">110dp</dimen>
+    <dimen name="fab_elevation">6dp</dimen>
+    <dimen name="fab_press_translation_z">6dp</dimen>
+    <dimen name="fab_margin">24dp</dimen>
+    <dimen name="appbar_height">240dp</dimen>
 </resources>

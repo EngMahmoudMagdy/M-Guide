@@ -30,6 +30,7 @@
         android:layout_weight="1"
         android:id="@+id/widget_content"
         android:orientation="vertical"
+        android:background="@color/back_grey"
         >
 
         <GridView

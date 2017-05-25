@@ -3,22 +3,28 @@ package com.magdy.mguide.UI;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
+import android.database.Cursor;
 import android.graphics.Bitmap;
+import android.graphics.PorterDuff;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.design.widget.CollapsingToolbarLayout;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
+import android.support.v4.content.ContextCompat;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ImageView;
-import android.widget.ListView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.magdy.mguide.BuildConfig;
@@ -29,10 +35,15 @@ import com.magdy.mguide.VideoAndReviewData;
 import com.squareup.picasso.Picasso;
 import com.squareup.picasso.Target;
 
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
+
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-import org.w3c.dom.Text;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -40,6 +51,8 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Locale;
 
 import com.magdy.mguide.Data.Contract;
@@ -50,12 +63,25 @@ import com.magdy.mguide.Data.Contract;
 
 public class DetailActivityFragment extends Fragment {
 
-    public VideoAndReviewData thisMovieData  = new VideoAndReviewData();
-    public ArrayAdapter <String> mTrailerAdapter ;
+    public static final String MOVIE_PIC_BASE_URL = "http://image.tmdb.org/t/p/w185//";
+    public static final String TRAILER_PIC_BASE_URL = "http://i.ytimg.com/vi/";
+    public static final String TRAILER_PIC_FOOTER_NAME = "/mqdefault.jpg";
+    public VideoAndReviewData thisMovieData ;
+    public HorizontalRecyclerTrailerAdapter mTrailerAdapter ;
+    public RecyclerView mTrailerRecycler;
+    public HorizontalReviewAdapter mReviewAdapter ;
+    public RecyclerView mReviewRecycler;
+    public HorizontalReviewAdapter mFireReviewAdapter ;
+    public RecyclerView mFireReviewRecycler;
+    public LinearLayout apiReviewSection  ;
     Context mContext ;
+    DetailActivity detailActivity;
     ImageView img2 ;
     ImageView img ;
-    public int id ;
+    boolean isFav = false;
+    Information info;
+    FloatingActionButton b;
+    List<String> userReviews , userNames;
 
     public DetailActivityFragment() {
     }
@@ -67,36 +93,96 @@ public class DetailActivityFragment extends Fragment {
 
 
         View rootView = inflater.inflate(R.layout.fragment_detail, container, false);
-        String t1 = getArguments().getString(Contract.Movie.COLUMN_TITLE);
+        if(savedInstanceState==null)
+        info = (Information) getArguments().getSerializable(Contract.Movie.TABLE_NAME);
+        else
+            info = (Information) savedInstanceState.getSerializable(Contract.Movie.TABLE_NAME);
+
+        mContext = getActivity();
 
         collapsingToolbarLayout = (CollapsingToolbarLayout) rootView.findViewById(R.id.collapsing_toolbar) ;
-        collapsingToolbarLayout.setTitle(t1);
-        collapsingToolbarLayout.setContentDescription(t1);
+        collapsingToolbarLayout.setTitle(info.getTitle());
+        collapsingToolbarLayout.setContentDescription(info.getTitle());
+        TextView title = (TextView)rootView.findViewById(R.id.title);
+        title.setText(info.getTitle());
 
-        String t2 = getArguments().getString(Contract.Movie.COLUMN_DATE);
+        detailActivity = (DetailActivity)getActivity();
+
+        Toolbar toolbar=(Toolbar)rootView.findViewById(R.id.toolbar);
+
+        detailActivity.setSupportActionBar(toolbar);
+        if(detailActivity.getSupportActionBar()!=null) {
+            detailActivity.getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+            detailActivity.getSupportActionBar().setDisplayShowHomeEnabled(true);
+        }
+
         ((TextView) rootView.findViewById(R.id.date))
-                .setText(t2);
-        String t3 = getArguments().getString(Contract.Movie.COLUMN_RATE);
+                .setText(info.getDate());
         ((TextView) rootView.findViewById(R.id.rates))
-                .setText(String.format(Locale.getDefault(),"%s / 10",t3));
-        String t4 = getArguments().getString(Contract.Movie.COLUMN_OVERVIEW);
+                .setText(String.format(Locale.getDefault(),"%s / 10",info.getVote()));
         TextView overview =  ((TextView) rootView.findViewById(R.id.overView));
-        overview.setText(t4);
-        overview.setContentDescription(t4);
+        overview.setText(info.getOverView());
+        overview.setContentDescription(info.getOverView());
 
-        id = getArguments().getInt(Contract.Movie.COLUMN_MOVIE_ID,0);
-        String pic = getArguments().getString(Contract.Movie.COLUMN_PIC_LINK);
+
+        thisMovieData  = new VideoAndReviewData();
+        userReviews = new ArrayList<>();
+        userNames = new ArrayList<>();
+
+        //For Trailers section with horizontal images of Trailers
+
+        mTrailerAdapter =
+                new HorizontalRecyclerTrailerAdapter(getContext(),
+                        thisMovieData.TrailerImageLink,
+                        thisMovieData.TrailerLink);
+        mTrailerRecycler = (RecyclerView)rootView.findViewById(R.id.trailer_recycler);
+        LinearLayoutManager horizontalLayoutManagaer
+                = new LinearLayoutManager(getContext(), LinearLayoutManager.HORIZONTAL, false);
+        mTrailerRecycler.setLayoutManager(horizontalLayoutManagaer);
+        mTrailerRecycler.setAdapter(mTrailerAdapter);
+
+
+        //For reveiw section with horizontal cardviews of reviews
+
+        mReviewAdapter =
+                new HorizontalReviewAdapter(getContext(),
+                        thisMovieData.ReviewAuthor,
+                        thisMovieData.ReviewContent);
+        mReviewRecycler = (RecyclerView)rootView.findViewById(R.id.review_recycler);
+        LinearLayoutManager horizontalLayoutManagaer2
+                = new LinearLayoutManager(getContext(), LinearLayoutManager.HORIZONTAL, false);
+        mReviewRecycler.setLayoutManager(horizontalLayoutManagaer2);
+        mReviewRecycler.setAdapter(mReviewAdapter);
+
+        mFireReviewAdapter =
+                new HorizontalReviewAdapter(getContext(),
+                        userNames,
+                        userReviews);
+        mFireReviewRecycler = (RecyclerView)rootView.findViewById(R.id.user_review_recycler);
+        LinearLayoutManager horizontalLayoutManagaer3
+                = new LinearLayoutManager(getContext(), LinearLayoutManager.HORIZONTAL, false);
+        mFireReviewRecycler.setLayoutManager(horizontalLayoutManagaer3);
+        mFireReviewRecycler.setAdapter(mFireReviewAdapter);
+
+        //linear layout review section
+        apiReviewSection = (LinearLayout) rootView.findViewById(R.id.api_review_section);
+
+        // prepare images
+
         img = (ImageView) rootView.findViewById(R.id.imageView);
+        img.setContentDescription(info.getTitle());
         img2 = (ImageView) rootView.findViewById(R.id.toolbar_photo);
+        img2.setContentDescription(info.getTitle());
 
+        // Load images in toolbar and image poster
         Picasso.with(getActivity()) //
-                .load(pic) //
+                .load(MOVIE_PIC_BASE_URL+info.getPIC()) //
                 .placeholder(R.drawable.placeholder) //
                 .resize(138, 207)
                 .into(img);
 
         Picasso.with(getActivity())
-                .load(pic)
+                .load(MOVIE_PIC_BASE_URL+info.getPIC())
                 .into(new Target() {
                     @Override
                     public void onBitmapLoaded (final Bitmap bitmap, Picasso.LoadedFrom from){
@@ -111,43 +197,99 @@ public class DetailActivityFragment extends Fragment {
                 });
 
 
-        final Information info = new Information();
-        info.Title = t1 ;
-        info.Date = t2 ;
-        info.Vote= t3;
-        info.OverView= t4;
-        info.id= id;
-        info.PIC= pic;
+        b = (FloatingActionButton) rootView.findViewById(R.id.button);
+        Cursor c = mContext.getContentResolver().query(Contract.Movie.URI, null, Contract.Movie.COLUMN_MOVIE_ID + " = " + info.id, null, null);
+        if(c!=null) {
+            if (c.getCount() == 0) {
+                isFav = false;
+                b.getDrawable().setColorFilter(ContextCompat.getColor(mContext, R.color.white), PorterDuff.Mode.SRC_IN);
+            } else {
+                isFav = true;
+                b.getDrawable().setColorFilter(ContextCompat.getColor(mContext, R.color.material_red_700), PorterDuff.Mode.SRC_IN);
+            }
+            c.close();
+        }
 
-        mContext = getActivity();
-        Button b = (Button) rootView.findViewById(R.id.button);
         b.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
-                ContentValues quoteCV = new ContentValues();
-                quoteCV.put(Contract.Movie.COLUMN_MOVIE_ID,info.id);
-                quoteCV.put(Contract.Movie.COLUMN_TITLE,info.Title);
-                quoteCV.put(Contract.Movie.COLUMN_DATE,info.Date);
-                quoteCV.put(Contract.Movie.COLUMN_PIC_LINK,info.PIC);
-                quoteCV.put(Contract.Movie.COLUMN_RATE,info.Vote);
-                quoteCV.put(Contract.Movie.COLUMN_OVERVIEW,info.OverView);
-                mContext.getContentResolver().insert(Contract.Movie.URI,quoteCV);
-
+                if(isFav)
+                {
+                    mContext.getContentResolver().delete(Contract.Movie.URI,Contract.Movie.COLUMN_MOVIE_ID + "=" + info.id, null);
+                    b.getDrawable().setColorFilter(ContextCompat.getColor(mContext,R.color.white), PorterDuff.Mode.SRC_IN);
+                }
+                else {
+                    ContentValues quoteCV = new ContentValues();
+                    quoteCV.put(Contract.Movie.COLUMN_MOVIE_ID, info.id);
+                    quoteCV.put(Contract.Movie.COLUMN_TITLE, info.Title);
+                    quoteCV.put(Contract.Movie.COLUMN_DATE, info.Date);
+                    quoteCV.put(Contract.Movie.COLUMN_PIC_LINK, info.PIC);
+                    quoteCV.put(Contract.Movie.COLUMN_RATE, info.Vote);
+                    quoteCV.put(Contract.Movie.COLUMN_OVERVIEW, info.OverView);
+                    mContext.getContentResolver().insert(Contract.Movie.URI, quoteCV);
+                    b.getDrawable().setColorFilter(ContextCompat.getColor(mContext,R.color.material_red_700), PorterDuff.Mode.SRC_IN);
+                }
                 Intent dataUpdatedIntent = new Intent(Contract.ACTION_DATA_UPDATED);
                 mContext.sendBroadcast(dataUpdatedIntent);
-
             }
         });
 
 
-        Log.w("Intent is here " , " "+ pic );
+        DatabaseReference dbref =  FirebaseDatabase.getInstance().getReference();
+        dbref.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                if(dataSnapshot!=null)
+                {
+                    userNames.clear();
+                    userReviews.clear();
+                    Iterable<DataSnapshot> ds= dataSnapshot.child("movies").child(String.valueOf(info.getId())).child("user_reviews").getChildren();
+                        for (DataSnapshot das : ds) {
+                            String name = dataSnapshot.child("users").child(das.getKey()).child("info").child("name").getValue(String.class);
+                            String review = das.child("review").getValue(String.class);
+                            userNames.add(name == null ? "" : name);
+                            userReviews.add(review == null ? "" : review);
+                        }
+                    mFireReviewAdapter.notifyDataSetChanged();
+                }
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
+        Button reviewButton = (Button)rootView.findViewById(R.id.add_review);
+        reviewButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(getContext(),ReviewEntryActivity.class);
+                intent.putExtra(Contract.Movie.COLUMN_MOVIE_ID,info.getId());
+                getContext().startActivity(intent);
+            }
+        });
+
         return rootView;
     }
 
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putSerializable(Contract.Movie.TABLE_NAME,info);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        // Handle action bar item clicks here. The action bar will
+        // automatically handle clicks on the Home/Up button, so long
+        // as you specify a parent activity in AndroidManifest.xml.
+        if (item.getItemId() == android.R.id.home) {
+            detailActivity.finish();
+        }
+        return super.onOptionsItemSelected(item);
+    }
     public void updateDetails(int idHere) {
 
-
         FetchTrailerReview moviesTask = new FetchTrailerReview() ;
-
         moviesTask.execute(idHere) ;
 
     }
@@ -155,17 +297,12 @@ public class DetailActivityFragment extends Fragment {
     public void onStart()
     {
         super.onStart();
-        updateDetails(id);
+        updateDetails(info.getId());
     }
 
-
-
-    public class FetchTrailerReview extends AsyncTask< Integer ,Void ,VideoAndReviewData > {
+    private class FetchTrailerReview extends AsyncTask< Integer ,Void ,VideoAndReviewData > {
 
         private final String LOG_TAG = FetchTrailerReview.class.getSimpleName() ;
-
-
-
 
         private VideoAndReviewData getMoviesDataFromJson(String MoviesJsonStrVideo , String MoviesJsonStrReview)
                 throws JSONException {
@@ -183,25 +320,25 @@ public class DetailActivityFragment extends Fragment {
             JSONObject ReviewJson = new JSONObject(MoviesJsonStrReview);
             JSONArray VideoArray = VideoJson.getJSONArray(VIDEO_RESULTS);
             JSONArray ReviewArray = ReviewJson.getJSONArray(REVIEW_RESULTS);
-            VideoAndReviewData m = new VideoAndReviewData();
+            VideoAndReviewData mData = new VideoAndReviewData();
             for(int i = 0; i < VideoArray.length(); i++) {
                 JSONObject Movie = VideoArray.getJSONObject(i);
-                m.TrailerName.add(Movie.getString(Video_name) );
-                m.TrailerLink.add( YOUTUBE_LINK_BASE_URL+Movie.getString(Video_key));
+                mData.TrailerName.add(Movie.getString(Video_name) );
+                mData.TrailerLink.add( YOUTUBE_LINK_BASE_URL+Movie.getString(Video_key));
+                mData.TrailerImageLink.add(TRAILER_PIC_BASE_URL+Movie.getString(Video_key)+TRAILER_PIC_FOOTER_NAME);
             }
             for(int i = 0; i < ReviewArray.length(); i++) {
                 JSONObject Movie = ReviewArray.getJSONObject(i);
-                m.ReviewAuthor.add( Movie.getString(Review_author) );
-                m.ReviewContent.add( Movie.getString(Review_content) );
+                mData.ReviewAuthor.add( Movie.getString(Review_author) );
+                mData.ReviewContent.add( Movie.getString(Review_content) );
 
             }
-            return m;
+            return mData;
         }
 
         @Override
 
         protected VideoAndReviewData doInBackground(Integer ... params) {
-
 
 
             // These two need to be declared outside the try/catch
@@ -249,8 +386,8 @@ public class DetailActivityFragment extends Fragment {
                 // Read the input stream into a String
                 InputStream inputStreamV = urlConnectionV.getInputStream();
                 InputStream inputStreamR = urlConnectionR.getInputStream();
-                StringBuffer bufferV = new StringBuffer();
-                StringBuffer bufferR = new StringBuffer();
+                StringBuilder bufferV = new StringBuilder();
+                StringBuilder bufferR = new StringBuilder();
                 if (inputStreamV == null) {
                     // Nothing to do.
                     return null;
@@ -268,13 +405,13 @@ public class DetailActivityFragment extends Fragment {
                     // Since it's JSON, adding a newline isn't necessary (it won't affect parsing)
                     // But it does make debugging a *lot* easier if you print out the completed
                     // buffer for debugging.
-                    bufferV.append(lineV + "\n");
+                    bufferV.append(lineV).append("\n");
                 }
                 while ((lineR = readerR.readLine()) != null) {
                     // Since it's JSON, adding a newline isn't necessary (it won't affect parsing)
                     // But it does make debugging a *lot* easier if you print out the completed
                     // buffer for debugging.
-                    bufferR.append(lineR + "\n");
+                    bufferR.append(lineR).append("\n");
                 }
 
                 if (bufferV.length() == 0  ) {
@@ -319,20 +456,13 @@ public class DetailActivityFragment extends Fragment {
             }
 
             try{
-                // loadPicLinks(moviesJsonStr);
                 return getMoviesDataFromJson(moviesJsonStrVideo , moviesJsonStrReview);
-
-
             }
             catch (JSONException e)
             {
                 Log.e(LOG_TAG,e.getMessage(),e);
                 e.printStackTrace();
-
-
             }
-
-
             return null;
         }
         @Override
@@ -342,70 +472,34 @@ public class DetailActivityFragment extends Fragment {
             {
                 thisMovieData.TrailerName.clear();
                 thisMovieData.TrailerLink.clear();
+                thisMovieData.TrailerImageLink.clear();
                 thisMovieData.ReviewAuthor.clear();
                 thisMovieData.ReviewContent.clear();
-
                 thisMovieData =  result ;
 
             }
-            TextView TrailerTitle = (TextView) getActivity().findViewById(R.id.trailer_title);
-            ListView trailerList = (ListView) getActivity().findViewById(R.id.listview_trailer);
-
 
             if(!thisMovieData.TrailerName.isEmpty() && !thisMovieData.TrailerLink.isEmpty()) {
-
-                mTrailerAdapter = new ArrayAdapter<String>(
-                        getActivity(),
-                        R.layout.trailer_item,
-                        R.id.t,
-                        thisMovieData.TrailerName
-
-                );
-
-                trailerList.setAdapter(mTrailerAdapter);
-
-                TrailerTitle.setText("Trailer: ");
-                TrailerTitle.setTextSize(20);
-
-                int totalHeight = 0;
-                for (int i = 0; i < mTrailerAdapter.getCount(); i++) {
-                    View listItem = mTrailerAdapter.getView(i, null, trailerList);
-                    listItem.measure(0, 0);
-                    totalHeight += listItem.getMeasuredHeight();
-                }
-                ViewGroup.LayoutParams params = trailerList.getLayoutParams();
-                params.height = totalHeight + (trailerList.getDividerHeight() * (mTrailerAdapter.getCount() - 1));
-                trailerList.setLayoutParams(params);
-                trailerList.requestLayout();
-
-                trailerList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-                    @Override
-                    public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-
-                        Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(thisMovieData.TrailerLink.get(position)));
-                        startActivity(intent);
-                    }
-                });
+                mTrailerAdapter =
+                        new HorizontalRecyclerTrailerAdapter(getContext(),
+                                thisMovieData.TrailerImageLink,
+                                thisMovieData.TrailerLink);
+                mTrailerRecycler.setAdapter(mTrailerAdapter);
                 mTrailerAdapter.notifyDataSetChanged();
-
             }
 
-            TextView reviewTitle = (TextView) getActivity().findViewById(R.id.review_title);
-            TextView reviewTextView = (TextView) getActivity().findViewById(R.id.textview_review);
-            if (!thisMovieData.ReviewContent.isEmpty()) {
 
-            reviewTitle.setText("Reviews: ");
-            reviewTitle.setTextSize(20);
-            String r1 ="" ;
-            for (int i = 0 ; i < thisMovieData.ReviewContent.size();i++)
+            if (thisMovieData.ReviewContent.isEmpty()) {
+                apiReviewSection.setVisibility(View.GONE);
+            }
+            else
             {
-
-                r1 =r1+"Review #"+(i+1)+" by "+thisMovieData.ReviewAuthor.get(i)+"\n"+"\n"+ thisMovieData.ReviewContent.get(i)+"\n" +"\n";
+                apiReviewSection.setVisibility(View.VISIBLE);
+                mReviewAdapter = new HorizontalReviewAdapter(getContext(),thisMovieData.ReviewAuthor,thisMovieData.ReviewContent);
+                mReviewRecycler.setAdapter(mReviewAdapter);
+               mReviewAdapter.notifyDataSetChanged();
             }
-            reviewTextView.setText(r1);
-            reviewTextView.setTextSize(20);
 
-            }
 
 
         }

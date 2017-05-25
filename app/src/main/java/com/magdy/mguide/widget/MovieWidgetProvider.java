@@ -46,8 +46,8 @@ public class MovieWidgetProvider extends AppWidgetProvider {
 
             remoteViews.setPendingIntentTemplate(R.id.widget_grid, pendingIntentTemplate);
             remoteViews.setEmptyView(R.id.widget_grid, R.id.widget_empty);
-            remoteViews.setInt(R.id.widget_grid, "setBackgroundResource", R.color.material_grey_300);
-            remoteViews.setInt(R.id.widget_content, "setBackgroundResource", R.color.material_grey_300);
+            remoteViews.setInt(R.id.widget_grid, "setBackgroundResource", R.color.back_grey);
+            remoteViews.setInt(R.id.widget_content, "setBackgroundResource", R.color.back_grey);
             remoteViews.setContentDescription(R.id.widget_grid, context.getString(R.string.widget_cd));
 
 
