@@ -2,8 +2,7 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
-    >
+    android:orientation="vertical">
 
     <FrameLayout
         android:id="@+id/widget"
@@ -20,27 +19,24 @@
             android:layout_gravity="center_vertical"
             android:contentDescription="@string/app_name"
             android:text="@string/app_name"
-            android:textColor="@color/white"
-            />
+            android:textColor="@color/white" />
     </FrameLayout>
 
     <LinearLayout
+        android:id="@+id/widget_content"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="1"
-        android:id="@+id/widget_content"
-        android:orientation="vertical"
         android:background="@color/back_grey"
-        >
+        android:orientation="vertical">
 
         <GridView
             android:id="@+id/widget_grid"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:divider="@null"
-            android:numColumns="2"
             android:dividerHeight="0dp"
-            />
+            android:numColumns="2" />
 
         <TextView
             android:id="@+id/widget_empty"
@@ -48,7 +44,7 @@
             android:layout_height="match_parent"
             android:fontFamily="sans-serif-condensed"
             android:gravity="center"
-            android:text="@string/no_movies"/>
+            android:text="@string/no_movies" />
     </LinearLayout>
 
 </LinearLayout>

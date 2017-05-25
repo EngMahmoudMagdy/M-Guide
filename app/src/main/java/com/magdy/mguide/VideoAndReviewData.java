@@ -8,9 +8,9 @@ import java.util.List;
  */
 public class VideoAndReviewData {
 
-    public List<String> TrailerName  = new ArrayList<>();
-    public List<String> TrailerLink  = new ArrayList<>();
-    public List<String> TrailerImageLink  = new ArrayList<>();
-    public List<String> ReviewContent  = new ArrayList<>();
+    public List<String> TrailerName = new ArrayList<>();
+    public List<String> TrailerLink = new ArrayList<>();
+    public List<String> TrailerImageLink = new ArrayList<>();
+    public List<String> ReviewContent = new ArrayList<>();
     public List<String> ReviewAuthor = new ArrayList<>();
 }

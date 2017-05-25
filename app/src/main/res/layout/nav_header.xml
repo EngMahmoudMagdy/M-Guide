@@ -3,36 +3,38 @@
     android:layout_width="match_parent"
     android:layout_height="192dp"
     android:background="@drawable/material_dark_banner"
-    android:padding="16dp"
-    android:theme="@style/ThemeOverlay.AppCompat.Dark"
+    android:gravity="bottom"
     android:orientation="vertical"
-    android:gravity="bottom">
+    android:padding="16dp"
+    android:theme="@style/ThemeOverlay.AppCompat.Dark">
 
 
-<ImageView
-    android:layout_width="96dp"
-    android:layout_height="96dp"
-    android:src="@drawable/ic_launcher"
-    android:scaleType="centerCrop"
-    android:contentDescription="@string/profile"
-    android:id="@+id/imageheader"/>
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:gravity="start"
-            android:textSize="24sp"
-            android:id="@+id/uname"
-            android:text="@string/app_name"
-            android:textColor="@android:color/white"
-            android:textAppearance="@style/TextAppearance.AppCompat.Body1"/>
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:gravity="start"
-            android:textSize="14sp"
-            android:id="@+id/emailtext"
-            android:text="@string/login"
-            android:textColor="@android:color/white"
-            android:textAppearance="@style/TextAppearance.AppCompat.Body1"/>
+    <ImageView
+        android:id="@+id/imageheader"
+        android:layout_width="96dp"
+        android:layout_height="96dp"
+        android:contentDescription="@string/profile"
+        android:scaleType="centerCrop"
+        android:src="@drawable/ic_launcher" />
+
+    <TextView
+        android:id="@+id/uname"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="start"
+        android:text="@string/app_name"
+        android:textAppearance="@style/TextAppearance.AppCompat.Body1"
+        android:textColor="@android:color/white"
+        android:textSize="24sp" />
+
+    <TextView
+        android:id="@+id/emailtext"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="start"
+        android:text="@string/login"
+        android:textAppearance="@style/TextAppearance.AppCompat.Body1"
+        android:textColor="@android:color/white"
+        android:textSize="14sp" />
 
 </LinearLayout>

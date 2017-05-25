@@ -1,33 +1,31 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.design.widget.CoordinatorLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<android.support.design.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="com.magdy.mguide.UI.MainActivityFragment"
     android:background="@color/back_grey"
-    >
-<RelativeLayout
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    >
-    <GridView
+    tools:context="com.magdy.mguide.UI.MainActivityFragment">
+
+    <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:id="@+id/grid1"
-        android:numColumns="2"
-        android:gravity="center"
-        >
-    </GridView>
-<TextView
-    android:layout_width="wrap_content"
-    android:layout_height="wrap_content"
-    android:layout_centerHorizontal="true"
-    android:layout_centerVertical="true"
-    android:textColor="@color/white"
-    android:textSize="32sp"
-    android:id="@+id/no_internet"
-    android:visibility="gone"
-    android:text="@string/no_movies_inter"/>
-</RelativeLayout>
+        android:layout_height="match_parent">
+
+        <GridView
+            android:id="@+id/grid1"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:gravity="center"
+            android:numColumns="2"></GridView>
+
+        <TextView
+            android:id="@+id/no_internet"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerHorizontal="true"
+            android:layout_centerVertical="true"
+            android:text="@string/no_movies_inter"
+            android:textColor="@color/white"
+            android:textSize="32sp"
+            android:visibility="gone" />
+    </RelativeLayout>
 </android.support.design.widget.CoordinatorLayout>

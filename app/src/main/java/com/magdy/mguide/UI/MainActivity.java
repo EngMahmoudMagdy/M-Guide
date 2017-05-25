@@ -6,12 +6,9 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.res.Configuration;
-
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Bundle;
-
-
 import android.support.annotation.NonNull;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.NavigationView;
@@ -42,11 +39,6 @@ import com.magdy.mguide.R;
 public class MainActivity extends AppCompatActivity implements ListInfoListener {
 
     public boolean mTwoPane;
-    private DrawerLayout mDrawer;
-    private Toolbar toolbar;
-    private NavigationView nvDrawer;
-    private ActionBarDrawerToggle drawerToggle;
-    private Menu menu;
     TextView navName, navEmail;
     FirebaseAuth mauth;
     FirebaseAuth.AuthStateListener mauthListener;
@@ -54,36 +46,39 @@ public class MainActivity extends AppCompatActivity implements ListInfoListener 
     CoordinatorLayout coordinatorLayout;
     MainActivityFragment mainActivityFragment;
     int type = 0;
-
     Snackbar snackbar;
+    private DrawerLayout mDrawer;
+    private Toolbar toolbar;
+    private NavigationView nvDrawer;
+    private ActionBarDrawerToggle drawerToggle;
+    private Menu menu;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-            super.onCreate(savedInstanceState);
-            setContentView(R.layout.activity_main);
-            Log.w("creating Main " , " here");
-        coordinatorLayout = (CoordinatorLayout)findViewById(R.id.coordinator);
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_main);
+        Log.w("creating Main ", " here");
+        coordinatorLayout = (CoordinatorLayout) findViewById(R.id.coordinator);
         FrameLayout flPanel2 = (FrameLayout) findViewById(R.id.fl_panel2);
 
-        mTwoPane =(null != flPanel2);
+        mTwoPane = (null != flPanel2);
 
         mainActivityFragment = new MainActivityFragment();
 
         if (savedInstanceState == null) {
             mainActivityFragment.setListInfoListenter(this);
             getSupportFragmentManager().beginTransaction()
-                    .add(R.id.fl_panel1,mainActivityFragment)
+                    .add(R.id.fl_panel1, mainActivityFragment)
                     .commit();
-        }else
-        {
+        } else {
             mainActivityFragment.setListInfoListenter(this);
             getSupportFragmentManager().beginTransaction()
-                    .replace(R.id.fl_panel1,mainActivityFragment)
+                    .replace(R.id.fl_panel1, mainActivityFragment)
                     .commit();
         }
 
 
-        toolbar = (Toolbar)findViewById(R.id.toolbar);
+        toolbar = (Toolbar) findViewById(R.id.toolbar);
         toolbar.setTitle(getString(R.string.app_name));
 
         mDrawer = (DrawerLayout) findViewById(R.id.drawer_layout);//layout itself
@@ -99,16 +94,16 @@ public class MainActivity extends AppCompatActivity implements ListInfoListener 
         drawerToggle = setupDrawerToggle();
         drawerToggle.setDrawerIndicatorEnabled(true);
 
-        snackbar =  Snackbar
+        snackbar = Snackbar
                 .make(coordinatorLayout, getString(R.string.no_movies_inter), Snackbar.LENGTH_INDEFINITE)
-                .setAction("RETRY", new View.OnClickListener() {
+                .setAction(getResources().getString(R.string.retry), new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
 
                         mainActivityFragment = new MainActivityFragment(type);
                         mainActivityFragment.setListInfoListenter(MainActivity.this);
                         getSupportFragmentManager().beginTransaction()
-                                .replace(R.id.fl_panel1,mainActivityFragment)
+                                .replace(R.id.fl_panel1, mainActivityFragment)
                                 .commit();
 
                     }
@@ -117,19 +112,17 @@ public class MainActivity extends AppCompatActivity implements ListInfoListener 
         installListener();
 
 
-        DatabaseReference dbref =  FirebaseDatabase.getInstance().getReference().child("users");
+        DatabaseReference dbref = FirebaseDatabase.getInstance().getReference().child("users");
 
         mauth = FirebaseAuth.getInstance();
         mauthListener = new FirebaseAuth.AuthStateListener() {
             @Override
             public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
-                if(firebaseAuth.getCurrentUser()==null)
-                {
+                if (firebaseAuth.getCurrentUser() == null) {
                     menu.findItem(R.id.nav_log).setTitle(R.string.login);
                     navName.setText(R.string.app_name);
                     navEmail.setText(R.string.login);
-                }
-                else {
+                } else {
                     menu.findItem(R.id.nav_log).setTitle(R.string.logout);
                 }
             }
@@ -141,9 +134,8 @@ public class MainActivity extends AppCompatActivity implements ListInfoListener 
                 if (dataSnapshot == null) {
                     navName.setText(R.string.app_name);
                     navEmail.setText(R.string.login);
-                }
-                else {
-                    if (mauth.getCurrentUser()!=null) {
+                } else {
+                    if (mauth.getCurrentUser() != null) {
                         DataSnapshot userSnapShot = dataSnapshot.child(mauth.getCurrentUser().getUid());
                         String name = userSnapShot.child("info").child("name").getValue(String.class);
                         String email = userSnapShot.child("info").child("email").getValue(String.class);
@@ -152,6 +144,7 @@ public class MainActivity extends AppCompatActivity implements ListInfoListener 
                     }
                 }
             }
+
             @Override
             public void onCancelled(DatabaseError databaseError) {
 
@@ -169,7 +162,6 @@ public class MainActivity extends AppCompatActivity implements ListInfoListener 
         if (broadcastReceiver == null) {
 
 
-
             broadcastReceiver = new BroadcastReceiver() {
 
                 @Override
@@ -177,9 +169,9 @@ public class MainActivity extends AppCompatActivity implements ListInfoListener 
 
                     Bundle extras = intent.getExtras();
 
-                    NetworkInfo info =  extras.getParcelable("networkInfo");
+                    NetworkInfo info = extras.getParcelable("networkInfo");
 
-                    NetworkInfo.State state ;
+                    NetworkInfo.State state;
                     if (info != null) {
                         state = info.getState();
 
@@ -192,13 +184,13 @@ public class MainActivity extends AppCompatActivity implements ListInfoListener 
                             unregisterReceiver(broadcastReceiver);
 
                         } else {
-                            snackbar.setAction("RETRY", new View.OnClickListener() {
+                            snackbar.setAction(getResources().getString(R.string.retry), new View.OnClickListener() {
                                 @Override
                                 public void onClick(View view) {
                                     mainActivityFragment = new MainActivityFragment(type);
                                     mainActivityFragment.setListInfoListenter(MainActivity.this);
                                     getSupportFragmentManager().beginTransaction()
-                                            .replace(R.id.fl_panel1,mainActivityFragment)
+                                            .replace(R.id.fl_panel1, mainActivityFragment)
                                             .commit();
                                 }
                             });
@@ -230,28 +222,28 @@ public class MainActivity extends AppCompatActivity implements ListInfoListener 
 
         // Highlight the selected item has been done by NavigationView
 
-        MainActivityFragment mainActivityFragment ;
+        MainActivityFragment mainActivityFragment;
 
         menuItem.setChecked(true);
         // Set action bar title
         // Close the navigation drawer
         mDrawer.closeDrawers();
-        switch(menuItem.getItemId()) {
+        switch (menuItem.getItemId()) {
             case R.id.nav_most:
-                type= 0;
+                type = 0;
                 break;
             case R.id.nav_top:
-                type= 1;
+                type = 1;
                 break;
             case R.id.nav_fav:
-                type = 2 ;
+                type = 2;
                 break;
             case R.id.nav_log:
-                if(mauth.getCurrentUser()==null){
-                    Intent intent = new Intent(getBaseContext(),SignInActivity.class);
+                if (mauth.getCurrentUser() == null) {
+                    Intent intent = new Intent(getBaseContext(), SignInActivity.class);
                     intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                     startActivity(intent);
-                }else {
+                } else {
                     mauth.signOut();
                     //finish();
                 }
@@ -264,7 +256,7 @@ public class MainActivity extends AppCompatActivity implements ListInfoListener 
             mainActivityFragment = new MainActivityFragment(type);
             mainActivityFragment.setListInfoListenter(this);
             getSupportFragmentManager().beginTransaction()
-                    .replace(R.id.fl_panel1,mainActivityFragment)
+                    .replace(R.id.fl_panel1, mainActivityFragment)
                     .commit();
         } catch (Exception e) {
             e.printStackTrace();
@@ -276,8 +268,7 @@ public class MainActivity extends AppCompatActivity implements ListInfoListener 
         // and will not render the hamburger icon without it.
         return new ActionBarDrawerToggle(this, mDrawer, toolbar,
                 R.string.drawer_open,
-                R.string.drawer_close)
-        {
+                R.string.drawer_close) {
 
             /** Called when a drawer has settled in a completely closed state. */
             public void onDrawerClosed(View view) {
@@ -311,19 +302,17 @@ public class MainActivity extends AppCompatActivity implements ListInfoListener 
 
     @Override
     public void setSelectedList(Information info) {
-        if (mTwoPane)
-        {
+        if (mTwoPane) {
             DetailActivityFragment detailActivityFragment = new DetailActivityFragment();
-            Bundle extra =  new Bundle() ;
-            extra.putSerializable(Contract.Movie.TABLE_NAME,info);
+            Bundle extra = new Bundle();
+            extra.putSerializable(Contract.Movie.TABLE_NAME, info);
             detailActivityFragment.setArguments(extra);
-            getSupportFragmentManager().beginTransaction().replace(R.id.fl_panel2 ,detailActivityFragment).commit();
+            getSupportFragmentManager().beginTransaction().replace(R.id.fl_panel2, detailActivityFragment).commit();
 
-        }
-        else {
+        } else {
 
             Intent intent = new Intent(this, DetailActivity.class);
-            intent.putExtra(Contract.Movie.TABLE_NAME,info);
+            intent.putExtra(Contract.Movie.TABLE_NAME, info);
             startActivity(intent);
         }
 

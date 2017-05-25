@@ -5,9 +5,7 @@ import android.content.Intent;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.net.Uri;
-
 import android.os.Binder;
-
 import android.widget.AdapterView;
 import android.widget.RemoteViews;
 import android.widget.RemoteViewsService;
@@ -18,7 +16,6 @@ import com.magdy.mguide.R;
 import com.squareup.picasso.Picasso;
 
 import java.io.IOException;
-
 
 
 /**
@@ -33,12 +30,14 @@ public class MovieWidgetService extends RemoteViewsService {
 
     private class ListRemoteViewFactory implements RemoteViewsFactory {
 
-         static final String MOVIE_PIC_BASE_URL = "http://image.tmdb.org/t/p/w185//";
+        static final String MOVIE_PIC_BASE_URL = "http://image.tmdb.org/t/p/w185//";
         private Cursor data = null;
+
         @Override
         public void onCreate() {
 
         }
+
         @Override
         public void onDestroy() {
             if (data != null) {
@@ -55,7 +54,7 @@ public class MovieWidgetService extends RemoteViewsService {
 
             final long identityToken = Binder.clearCallingIdentity();
 
-            String[] s=  Contract.Movie.MOVIE_COLUMNS.toArray(new String[]{});
+            String[] s = Contract.Movie.MOVIE_COLUMNS.toArray(new String[]{});
             data = getContentResolver().query(Contract.Movie.URI,
                     s,
                     null,
@@ -66,7 +65,7 @@ public class MovieWidgetService extends RemoteViewsService {
 
         @Override
         public int getCount() {
-            return  data == null ? 0 : data.getCount();
+            return data == null ? 0 : data.getCount();
         }
 
         @SuppressLint("PrivateResource")
@@ -80,27 +79,27 @@ public class MovieWidgetService extends RemoteViewsService {
             final RemoteViews remoteViews = new RemoteViews(getBaseContext().getPackageName(), R.layout.widget_grid_item);
 
             Information movie1 = new Information();
-            movie1.setPIC( data.getString(Contract.Movie.POSITION_PIC_LINK));
+            movie1.setPIC(data.getString(Contract.Movie.POSITION_PIC_LINK));
             movie1.setTitle(data.getString(Contract.Movie.POSITION_TITLE));
             movie1.setOverView(data.getString(Contract.Movie.POSITION_OVERVIEW));
             movie1.setVote(data.getString(Contract.Movie.POSITION_RATE));
             movie1.setDate(data.getString(Contract.Movie.POSITION_DATE));
             movie1.setId(data.getInt(Contract.Movie.POSITION_MOVIE_ID));
 
-            Uri imageUri = Uri.parse(MOVIE_PIC_BASE_URL+movie1.getPIC());
+            Uri imageUri = Uri.parse(MOVIE_PIC_BASE_URL + movie1.getPIC());
             Bitmap bitmap;
             try {
-                bitmap =  Picasso.with(getApplicationContext())
+                bitmap = Picasso.with(getApplicationContext())
                         .load(imageUri)
                         .get();
-                remoteViews.setImageViewBitmap(R.id.widget_image,bitmap);
+                remoteViews.setImageViewBitmap(R.id.widget_image, bitmap);
             } catch (IOException e) {
                 e.printStackTrace();
-                remoteViews.setImageViewResource(R.id.widget_image,R.drawable.placeholder);
+                remoteViews.setImageViewResource(R.id.widget_image, R.drawable.placeholder);
             }
 
             final Intent i = new Intent();
-            i.putExtra(Contract.Movie.TABLE_NAME,movie1);
+            i.putExtra(Contract.Movie.TABLE_NAME, movie1);
             remoteViews.setOnClickFillInIntent(R.id.grid_item, i);
             return remoteViews;
         }

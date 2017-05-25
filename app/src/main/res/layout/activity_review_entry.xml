@@ -2,60 +2,62 @@
 <android.support.design.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/coordinator"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="com.magdy.mguide.UI.ReviewEntryActivity"
-    android:id="@+id/coordinator"
-    android:background="@color/back_grey">
+    android:background="@color/back_grey"
+    tools:context="com.magdy.mguide.UI.ReviewEntryActivity">
+
     <android.support.design.widget.AppBarLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
+
         <android.support.v7.widget.Toolbar
+            android:id="@+id/review_toolbar"
             android:layout_width="match_parent"
             android:layout_height="?attr/actionBarSize"
-            android:theme="@style/MyToolbar"
-            android:id="@+id/review_toolbar"/>
+            android:theme="@style/MyToolbar" />
     </android.support.design.widget.AppBarLayout>
+
     <android.support.v4.widget.NestedScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:scrollbars="vertical"
         app:layout_behavior="@string/appbar_scrolling_view_behavior">
+
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:paddingBottom="@dimen/activity_vertical_margin"
-            android:paddingStart="@dimen/activity_horizontal_margin"
-            android:paddingEnd="@dimen/activity_horizontal_margin"
-            android:paddingTop="@dimen/activity_vertical_margin"
             android:orientation="vertical"
-            >
+            android:paddingBottom="@dimen/activity_vertical_margin"
+            android:paddingEnd="@dimen/activity_horizontal_margin"
+            android:paddingStart="@dimen/activity_horizontal_margin"
+            android:paddingTop="@dimen/activity_vertical_margin">
+
             <EditText
-                android:inputType="textMultiLine"
-                android:minLines="10"
-                android:gravity="top|start"
-                android:maxLines="12"
-                android:layout_height="wrap_content"
-                android:layout_width="fill_parent"
-                android:scrollbars="vertical"
                 android:id="@+id/review_edittext"
-                android:background="@drawable/rounded"
-                android:hint="@string/ur_review"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
                 android:layout_marginTop="24dp"
+                android:background="@drawable/rounded"
+                android:gravity="top|start"
+                android:hint="@string/ur_review"
+                android:inputType="textMultiLine"
+                android:maxLines="12"
+                android:minLines="10"
                 android:padding="@dimen/activity_horizontal_margin"
-                />
+                android:scrollbars="vertical" />
 
             <Button
-                android:text="@string/submit"
+                android:id="@+id/submit_review"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:padding="@dimen/activity_horizontal_margin"
-                android:background="@drawable/rounded_button"
-                android:id="@+id/submit_review"
-                android:textColor="@color/white"
-                android:textSize="24sp"
                 android:layout_marginTop="24dp"
-                />
+                android:background="@drawable/rounded_button"
+                android:padding="@dimen/activity_horizontal_margin"
+                android:text="@string/submit"
+                android:textColor="@color/white"
+                android:textSize="24sp" />
 
         </LinearLayout>
     </android.support.v4.widget.NestedScrollView>

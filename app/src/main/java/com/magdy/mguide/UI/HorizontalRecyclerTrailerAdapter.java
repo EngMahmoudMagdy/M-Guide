@@ -18,24 +18,16 @@ import java.util.List;
  * Created by engma on 5/24/2017.
  */
 
- class HorizontalRecyclerTrailerAdapter extends RecyclerView.Adapter<HorizontalRecyclerTrailerAdapter.SimpleViewHolder> {
+class HorizontalRecyclerTrailerAdapter extends RecyclerView.Adapter<HorizontalRecyclerTrailerAdapter.SimpleViewHolder> {
 
+    List<String> itemList;
+    List<String> linkList;
     private Context context;
-    List <String>itemList;
-    List <String>linkList;
-    public HorizontalRecyclerTrailerAdapter(Context context, List<String> items , List<String> links ){
+
+    public HorizontalRecyclerTrailerAdapter(Context context, List<String> items, List<String> links) {
         this.context = context;
-        this.itemList = items ;
-        this.linkList = links ;
-    }
-
-    class SimpleViewHolder extends RecyclerView.ViewHolder {
-        final ImageView imageView;
-        SimpleViewHolder(View itemView) {
-
-            super(itemView);
-            imageView =  (ImageView)itemView.findViewById(R.id.item_image);
-        }
+        this.itemList = items;
+        this.linkList = links;
     }
 
     @Override
@@ -61,6 +53,16 @@ import java.util.List;
     @Override
     public int getItemCount() {
         return itemList.size();
+    }
+
+    class SimpleViewHolder extends RecyclerView.ViewHolder {
+        final ImageView imageView;
+
+        SimpleViewHolder(View itemView) {
+
+            super(itemView);
+            imageView = (ImageView) itemView.findViewById(R.id.item_image);
+        }
     }
 
 }

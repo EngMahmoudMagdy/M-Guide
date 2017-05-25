@@ -40,6 +40,11 @@
     <string name="submit">Submit</string>
     <string name="ur_review">your review</string>
     <string name="review_add">Review added</string>
-    <string name="registering">Registering</string>
+    <string name="registering">Registering …</string>
+    <string name="signing">Signing in …</string>
+    <string name="email_pass_empty">email or password is empty</string>
+    <string name="log_failed">The Log is failed</string>
+    <string name="sign_up_failed">Sign up failed</string>
+    <string name="retry">RETRY</string>
 
 </resources>

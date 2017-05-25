@@ -3,6 +3,7 @@ package com.magdy.mguide.Data;
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
+
 import com.magdy.mguide.Data.Contract.Movie;
 
 /**
@@ -13,8 +14,9 @@ public class DBHelper extends SQLiteOpenHelper {
 
     private static final String NAME = "Movies.db";
     private static final int VERSION = 1;
+
     public DBHelper(Context context) {
-        super(context , NAME ,null , VERSION);
+        super(context, NAME, null, VERSION);
     }
 
     @Override

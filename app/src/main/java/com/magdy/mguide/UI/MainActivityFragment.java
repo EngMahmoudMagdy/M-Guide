@@ -12,8 +12,6 @@ import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
 import android.util.Log;
 import android.view.LayoutInflater;
-
-
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
@@ -45,65 +43,63 @@ import java.util.List;
  * A placeholder fragment containing a simple view.
  */
 
-public class MainActivityFragment extends Fragment implements LoaderManager.LoaderCallbacks<Cursor>{
+public class MainActivityFragment extends Fragment implements LoaderManager.LoaderCallbacks<Cursor> {
 
 
-    private GridView grid ;
-    private TextView errorText ;
-    private ImageAdapter imgrid  ;
-    public List<Information> MovieData2  = new ArrayList<Information>();
-    public List<String> MovieTitle  = new ArrayList<String>();
-    ListInfoListener fListener ;
-    View rootView;
-    Context mContext ;
-    private int mType ;
     private final static String TYPE_KEY = "type";
+    public List<Information> MovieData2 = new ArrayList<>();
+    public List<String> MovieTitle = new ArrayList<>();
+    ListInfoListener fListener;
+    View rootView;
+    Context mContext;
+    private GridView grid;
+    private TextView errorText;
+    private ImageAdapter imgrid;
+    private int mType;
 
-    public MainActivityFragment()
-    {
+    public MainActivityFragment() {
 
     }
+
     @SuppressLint("ValidFragment")
-    public MainActivityFragment(int type)
-    {
-        mType = type ;
+    public MainActivityFragment(int type) {
+        mType = type;
         //updatePage();
     }
 
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState){
+                             Bundle savedInstanceState) {
         rootView = inflater.inflate(R.layout.fragment_main, container, false);
 
 
         grid = (GridView) rootView.findViewById(R.id.grid1);
-        errorText = (TextView)rootView.findViewById(R.id.no_internet);
+        errorText = (TextView) rootView.findViewById(R.id.no_internet);
 
-        mContext = getActivity() ;
+        mContext = getActivity();
         imgrid = new ImageAdapter(getActivity(), MovieData2);
         grid.setAdapter(imgrid);
 
 
-        if(savedInstanceState!=null) {
+        if (savedInstanceState != null) {
             mType = savedInstanceState.getInt(TYPE_KEY);
         }
 
 
-        return rootView ;
+        return rootView;
     }
 
     @Override
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
-        outState.putInt(TYPE_KEY,mType);
+        outState.putInt(TYPE_KEY, mType);
     }
 
     public void updatePage() {
 
         FetchMoviesTask moviesTask = new FetchMoviesTask();
-        switch(mType)
-        {
+        switch (mType) {
             case 0:
                 moviesTask.execute(getString(R.string.pref_kind_most_popular));
                 break;
@@ -117,8 +113,7 @@ public class MainActivityFragment extends Fragment implements LoaderManager.Load
     }
 
     @Override
-    public void onStart()
-    {
+    public void onStart() {
         super.onStart();
         updatePage();
     }
@@ -134,16 +129,14 @@ public class MainActivityFragment extends Fragment implements LoaderManager.Load
     @Override
     public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
         MovieData2.clear();
-        if(data==null)
-        {
+        if (data == null) {
             errorText.setText(R.string.no_movies);
             errorText.setVisibility(View.VISIBLE);
-        }
-        else{
+        } else {
             for (int i = 0; i < data.getCount(); i++) {
                 Information movie1 = new Information();
                 data.moveToPosition(i);
-                movie1.setPIC( data.getString(Contract.Movie.POSITION_PIC_LINK));
+                movie1.setPIC(data.getString(Contract.Movie.POSITION_PIC_LINK));
                 movie1.setTitle(data.getString(Contract.Movie.POSITION_TITLE));
                 movie1.setOverView(data.getString(Contract.Movie.POSITION_OVERVIEW));
                 movie1.setVote(data.getString(Contract.Movie.POSITION_RATE));
@@ -163,18 +156,23 @@ public class MainActivityFragment extends Fragment implements LoaderManager.Load
 
     }
 
+    //setter for listener
+    public void setListInfoListenter(ListInfoListener lsn) {
+        fListener = lsn;
+    }
 
-    private class FetchMoviesTask extends AsyncTask<String ,Void ,List<Information> > {
+    private class FetchMoviesTask extends AsyncTask<String, Void, List<Information>> {
 
-        private final String LOG_TAG = FetchMoviesTask.class.getSimpleName() ;
+        private final String LOG_TAG = FetchMoviesTask.class.getSimpleName();
+
         /**
          * Take the String representing the complete forecast in JSON Format and
          * pull out the data we need to construct the Strings needed for the wireframes.
-         *
+         * <p>
          * Fortunately parsing is easy:  constructor takes the JSON string and converts it
          * into an Object hierarchy for us.
          */
-        private List <Information> getMoviesDataFromJson(String MoviesJsonStr)
+        private List<Information> getMoviesDataFromJson(String MoviesJsonStr)
                 throws JSONException {
 
             // These are the names of the JSON objects that need to be extracted.
@@ -187,26 +185,25 @@ public class MainActivityFragment extends Fragment implements LoaderManager.Load
             final String TMDB_ID = "id";
 
 
-
             JSONObject MoviesJson = new JSONObject(MoviesJsonStr);
             JSONArray MoviesArray = MoviesJson.getJSONArray(TMDB_RESULTS);
-            List<Information> MovieData  = new ArrayList<>();
-            MovieData.clear() ;
-            for(int i = 0; i < MoviesArray.length(); i++) {
+            List<Information> MovieData = new ArrayList<>();
+            MovieData.clear();
+            for (int i = 0; i < MoviesArray.length(); i++) {
                 Information movie1 = new Information();
                 JSONObject Movie = MoviesArray.getJSONObject(i);
                 movie1.PIC = Movie.getString(TMDB_PIC);
 
-                MovieTitle.add( Movie.getString(TMDB_Title));
-                movie1.Title= Movie.getString(TMDB_Title);
-                movie1.OverView= Movie.getString(TMDB_OverView);
-                movie1.Vote= Movie.getString(TMDB_Vote);
-                movie1.Date= Movie.getString(TMDB_Date);
-                movie1.id= Movie.getInt(TMDB_ID);
+                MovieTitle.add(Movie.getString(TMDB_Title));
+                movie1.Title = Movie.getString(TMDB_Title);
+                movie1.OverView = Movie.getString(TMDB_OverView);
+                movie1.Vote = Movie.getString(TMDB_Vote);
+                movie1.Date = Movie.getString(TMDB_Date);
+                movie1.id = Movie.getInt(TMDB_ID);
 
-                MovieData.add(movie1) ;
+                MovieData.add(movie1);
             }
-            Log.v("data coming " , MovieTitle.get(0));
+            Log.v("data coming ", MovieTitle.get(0));
 
 
             return MovieData;
@@ -214,8 +211,7 @@ public class MainActivityFragment extends Fragment implements LoaderManager.Load
 
         @Override
 
-        protected List <Information> doInBackground(String... params) {
-
+        protected List<Information> doInBackground(String... params) {
 
 
             // These two need to be declared outside the try/catch
@@ -231,8 +227,8 @@ public class MainActivityFragment extends Fragment implements LoaderManager.Load
                 // Possible parameters are avaiable at OWM's forecast API page, at
                 // http://openweathermap.org/API#forecast
                 //http://api.themoviedb.org/3/movie/popular?api_key=179a8cf9fc6fab0def62671610a2704b
-                final String MOVIE_DB_BASE_URL = "http://api.themoviedb.org/3/"+params[0];
-                final String APPID_PARAM ="api_key";
+                final String MOVIE_DB_BASE_URL = "http://api.themoviedb.org/3/" + params[0];
+                final String APPID_PARAM = "api_key";
                 Uri builtUri = Uri.parse(MOVIE_DB_BASE_URL).buildUpon()
                         .appendQueryParameter(APPID_PARAM, BuildConfig.THE_MOVIE_DB_API_KEY)
                         .build();
@@ -288,15 +284,13 @@ public class MainActivityFragment extends Fragment implements LoaderManager.Load
                 }
             }
 
-            try{
+            try {
 
                 return getMoviesDataFromJson(moviesJsonStr);
 
 
-            }
-            catch (JSONException e)
-            {
-                Log.e(LOG_TAG,e.getMessage(),e);
+            } catch (JSONException e) {
+                Log.e(LOG_TAG, e.getMessage(), e);
                 e.printStackTrace();
 
 
@@ -305,19 +299,15 @@ public class MainActivityFragment extends Fragment implements LoaderManager.Load
 
             return null;
         }
+
         @Override
-        protected void onPostExecute(List <Information> result)
-        {
+        protected void onPostExecute(List<Information> result) {
             MovieData2.clear();
-            if(result == null)
-            {
+            if (result == null) {
                 errorText.setText(R.string.no_movies_inter);
                 errorText.setVisibility(View.VISIBLE);
-            }
-            else
-            {
-                for(int i = 0 ; i < result.size() ; i++)
-                {
+            } else {
+                for (int i = 0; i < result.size(); i++) {
                     MovieData2.add(result.get(i));
                 }
                 errorText.setVisibility(View.GONE);
@@ -331,38 +321,26 @@ public class MainActivityFragment extends Fragment implements LoaderManager.Load
 
     }
 
-    //setter for listener
-    public void setListInfoListenter(ListInfoListener lsn)
-    {
-        fListener = lsn  ;
-    }
-
-
 
     //the custom adapter
 
-    private class ImageAdapter extends BaseAdapter
-    {
-         static final String MOVIE_PIC_BASE_URL = "http://image.tmdb.org/t/p/w185//";
-        List <Information> list = new ArrayList<> ();
-        private Context mContext ;
-//        private Cursor cursor;
-         ImageAdapter (Context c , List <Information >s)
-        {
-            mContext = c ;
-            list =s ;
+    private class ImageAdapter extends BaseAdapter {
+        static final String MOVIE_PIC_BASE_URL = "http://image.tmdb.org/t/p/w185//";
+        List<Information> list = new ArrayList<>();
+        private Context mContext;
+
+        ImageAdapter(Context c, List<Information> s) {
+            mContext = c;
+            list = s;
 
         }
-        /*void setCursor(Cursor cursor) {
-            this.cursor = cursor;
-            notifyDataSetChanged();
-        }*/
+
+
         @Override
         public int getCount() {
 
 
             return list.size();
-            //return MovieData2.size();
         }
 
         @Override
@@ -370,7 +348,6 @@ public class MainActivityFragment extends Fragment implements LoaderManager.Load
 
 
             return list.get(position);
-           // return MovieData2.get(position).PIC;
         }
 
         @Override
@@ -381,28 +358,26 @@ public class MainActivityFragment extends Fragment implements LoaderManager.Load
         @Override
         public View getView(final int position, View convertView, ViewGroup parent) {
 
-            LayoutInflater inflater = (LayoutInflater)mContext.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-            View v=inflater.inflate(R.layout.grid_item,parent,false);
-            ImageView view = (ImageView) v.findViewById(R.id.movie_image) ;
+            LayoutInflater inflater = (LayoutInflater) mContext.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+            View v = inflater.inflate(R.layout.grid_item, parent, false);
+            ImageView view = (ImageView) v.findViewById(R.id.movie_image);
             view.setContentDescription(list.get(position).Title);
             TextView textView = (TextView) v.findViewById(R.id.movie_title);
             textView.setText(list.get(position).Title);
             Picasso.with(mContext)
-                    .load(MOVIE_PIC_BASE_URL+list.get(position).PIC)
+                    .load(MOVIE_PIC_BASE_URL + list.get(position).PIC)
                     .placeholder(R.drawable.placeholder)
                     .fit()
                     .into(view);
             v.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    fListener.setSelectedList(MovieData2.get(position));
+                    fListener.setSelectedList(list.get(position));
                 }
             });
             return v;
         }
     }
-
-
 
 
 }

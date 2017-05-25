@@ -7,8 +7,8 @@
         <!-- -->
         <item
             android:id="@+id/nav_most"
-            android:icon="@drawable/ic_live_tv_black_24dp"
             android:checked="true"
+            android:icon="@drawable/ic_live_tv_black_24dp"
             android:title="@string/most" />
         <item
             android:id="@+id/nav_top"

@@ -18,28 +18,19 @@ import java.util.List;
  * Created by engma on 5/24/2017.
  */
 
- class HorizontalReviewAdapter extends RecyclerView.Adapter<HorizontalReviewAdapter.SimpleViewHolder> {
+class HorizontalReviewAdapter extends RecyclerView.Adapter<HorizontalReviewAdapter.SimpleViewHolder> {
 
 
     private Context context;
-    private List <String>nameList;
-    private List <String>reviewList;
-     HorizontalReviewAdapter(Context context, List<String> names , List<String> reviews ){
+    private List<String> nameList;
+    private List<String> reviewList;
+
+    HorizontalReviewAdapter(Context context, List<String> names, List<String> reviews) {
         this.context = context;
-        this.nameList = names ;
-        this.reviewList = reviews ;
+        this.nameList = names;
+        this.reviewList = reviews;
     }
 
-     class SimpleViewHolder extends RecyclerView.ViewHolder {
-         TextView review , name ;
-         CardView cardView;
-         SimpleViewHolder(View itemView) {
-            super(itemView);
-            review =(TextView)itemView.findViewById(R.id.review_body);
-            name =(TextView)itemView.findViewById(R.id.review_name);
-            cardView = (CardView)itemView.findViewById(R.id.review_item);
-        }
-    }
     @Override
     public SimpleViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         final View view = LayoutInflater.from(context).inflate(R.layout.review_item, parent, false);
@@ -55,9 +46,9 @@ import java.util.List;
         holder.cardView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent intent = new Intent(context,ReviewDetailActivity.class);
-                intent.putExtra("name",name);
-                intent.putExtra("review",review);
+                Intent intent = new Intent(context, ReviewDetailActivity.class);
+                intent.putExtra("name", name);
+                intent.putExtra("review", review);
                 context.startActivity(intent);
             }
         });
@@ -66,6 +57,18 @@ import java.util.List;
     @Override
     public int getItemCount() {
         return reviewList.size();
+    }
+
+    class SimpleViewHolder extends RecyclerView.ViewHolder {
+        TextView review, name;
+        CardView cardView;
+
+        SimpleViewHolder(View itemView) {
+            super(itemView);
+            review = (TextView) itemView.findViewById(R.id.review_body);
+            name = (TextView) itemView.findViewById(R.id.review_name);
+            cardView = (CardView) itemView.findViewById(R.id.review_item);
+        }
     }
 
 

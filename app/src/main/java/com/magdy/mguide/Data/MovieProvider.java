@@ -19,6 +19,7 @@ public class MovieProvider extends ContentProvider {
 
     private static final int MOVIE = 100;
     private static final UriMatcher uriMatcher = buildUriMatcher();
+    private DBHelper dbHelper;
 
     private static UriMatcher buildUriMatcher() {
         UriMatcher matcher = new UriMatcher(UriMatcher.NO_MATCH);
@@ -26,7 +27,6 @@ public class MovieProvider extends ContentProvider {
         return matcher;
     }
 
-    private DBHelper dbHelper;
     @Override
     public boolean onCreate() {
         dbHelper = new DBHelper(getContext());
@@ -52,7 +52,7 @@ public class MovieProvider extends ContentProvider {
                 sortOrder
         );
         Context context = getContext();
-        if (context != null){
+        if (context != null) {
             returnCursor.setNotificationUri(context.getContentResolver(), uri);
         }
 
@@ -71,18 +71,18 @@ public class MovieProvider extends ContentProvider {
 
         SQLiteDatabase db = dbHelper.getWritableDatabase();
         Uri returnUri;
-                db.insert(
-                        Contract.Movie.TABLE_NAME,
-                        null,
-                        values
-                );
-                returnUri = Contract.Movie.URI;
+        db.insert(
+                Contract.Movie.TABLE_NAME,
+                null,
+                values
+        );
+        returnUri = Contract.Movie.URI;
 
         Context context = getContext();
-        if (context != null){
+        if (context != null) {
             context.getContentResolver().notifyChange(uri, null);
         }
-        return returnUri ;
+        return returnUri;
     }
 
     @Override
@@ -94,15 +94,15 @@ public class MovieProvider extends ContentProvider {
             selection = "1";
         }
 
-                rowsDeleted = db.delete(
-                        Contract.Movie.TABLE_NAME,
-                        selection,
-                        selectionArgs
-                );
+        rowsDeleted = db.delete(
+                Contract.Movie.TABLE_NAME,
+                selection,
+                selectionArgs
+        );
 
         if (rowsDeleted != 0) {
             Context context = getContext();
-            if (context != null){
+            if (context != null) {
                 context.getContentResolver().notifyChange(uri, null);
             }
         }
@@ -119,26 +119,26 @@ public class MovieProvider extends ContentProvider {
     @Override
     public int bulkInsert(@NonNull Uri uri, @NonNull ContentValues[] values) {
         final SQLiteDatabase db = dbHelper.getWritableDatabase();
-                db.beginTransaction();
-                int returnCount = 0;
-                try {
-                    for (ContentValues value : values) {
-                        db.insert(
-                                Contract.Movie.TABLE_NAME,
-                                null,
-                                value
-                        );
-                    }
-                    db.setTransactionSuccessful();
-                } finally {
-                    db.endTransaction();
-                }
+        db.beginTransaction();
+        int returnCount = 0;
+        try {
+            for (ContentValues value : values) {
+                db.insert(
+                        Contract.Movie.TABLE_NAME,
+                        null,
+                        value
+                );
+            }
+            db.setTransactionSuccessful();
+        } finally {
+            db.endTransaction();
+        }
 
-                Context context = getContext();
-                if (context != null) {
-                    context.getContentResolver().notifyChange(uri, null);
-                }
+        Context context = getContext();
+        if (context != null) {
+            context.getContentResolver().notifyChange(uri, null);
+        }
 
-                return returnCount;
+        return returnCount;
     }
 }

@@ -2,16 +2,18 @@ package com.magdy.mguide.Data;
 
 import android.net.Uri;
 import android.provider.BaseColumns;
+
 import com.google.common.collect.ImmutableList;
+
 /**
  * Created by engma on 5/23/2017.
  */
 
 public class Contract {
 
+    public static final String ACTION_DATA_UPDATED = "com.magdy.mguide.ACTION_DATA_UPDATED";
     static final String AUTHORITY = "com.magdy.mguide";
     static final String PATH_MOVIE = "movie";
-    public static final String ACTION_DATA_UPDATED = "com.magdy.mguide.ACTION_DATA_UPDATED";
     private static final Uri BASE_URI = Uri.parse("content://" + AUTHORITY);
 
     private Contract() {

@@ -27,6 +27,11 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 import com.magdy.mguide.BuildConfig;
 import com.magdy.mguide.Data.Contract;
 import com.magdy.mguide.Information;
@@ -34,12 +39,6 @@ import com.magdy.mguide.R;
 import com.magdy.mguide.VideoAndReviewData;
 import com.squareup.picasso.Picasso;
 import com.squareup.picasso.Target;
-
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.ValueEventListener;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -55,8 +54,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
-import com.magdy.mguide.Data.Contract;
-
 /**
  * A placeholder fragment containing a simple view.
  */
@@ -66,52 +63,52 @@ public class DetailActivityFragment extends Fragment {
     public static final String MOVIE_PIC_BASE_URL = "http://image.tmdb.org/t/p/w185//";
     public static final String TRAILER_PIC_BASE_URL = "http://i.ytimg.com/vi/";
     public static final String TRAILER_PIC_FOOTER_NAME = "/mqdefault.jpg";
-    public VideoAndReviewData thisMovieData ;
-    public HorizontalRecyclerTrailerAdapter mTrailerAdapter ;
+    public VideoAndReviewData thisMovieData;
+    public HorizontalRecyclerTrailerAdapter mTrailerAdapter;
     public RecyclerView mTrailerRecycler;
-    public HorizontalReviewAdapter mReviewAdapter ;
+    public HorizontalReviewAdapter mReviewAdapter;
     public RecyclerView mReviewRecycler;
-    public HorizontalReviewAdapter mFireReviewAdapter ;
+    public HorizontalReviewAdapter mFireReviewAdapter;
     public RecyclerView mFireReviewRecycler;
-    public LinearLayout apiReviewSection  ;
-    Context mContext ;
+    public LinearLayout apiReviewSection;
+    Context mContext;
     DetailActivity detailActivity;
-    ImageView img2 ;
-    ImageView img ;
+    ImageView img2;
+    ImageView img;
     boolean isFav = false;
     Information info;
     FloatingActionButton b;
-    List<String> userReviews , userNames;
+    List<String> userReviews, userNames;
+    CollapsingToolbarLayout collapsingToolbarLayout;
 
     public DetailActivityFragment() {
     }
 
-    CollapsingToolbarLayout collapsingToolbarLayout ;
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
 
 
         View rootView = inflater.inflate(R.layout.fragment_detail, container, false);
-        if(savedInstanceState==null)
-        info = (Information) getArguments().getSerializable(Contract.Movie.TABLE_NAME);
+        if (savedInstanceState == null)
+            info = (Information) getArguments().getSerializable(Contract.Movie.TABLE_NAME);
         else
             info = (Information) savedInstanceState.getSerializable(Contract.Movie.TABLE_NAME);
 
         mContext = getActivity();
 
-        collapsingToolbarLayout = (CollapsingToolbarLayout) rootView.findViewById(R.id.collapsing_toolbar) ;
+        collapsingToolbarLayout = (CollapsingToolbarLayout) rootView.findViewById(R.id.collapsing_toolbar);
         collapsingToolbarLayout.setTitle(info.getTitle());
         collapsingToolbarLayout.setContentDescription(info.getTitle());
-        TextView title = (TextView)rootView.findViewById(R.id.title);
+        TextView title = (TextView) rootView.findViewById(R.id.title);
         title.setText(info.getTitle());
 
-        detailActivity = (DetailActivity)getActivity();
+        detailActivity = (DetailActivity) getActivity();
 
-        Toolbar toolbar=(Toolbar)rootView.findViewById(R.id.toolbar);
+        Toolbar toolbar = (Toolbar) rootView.findViewById(R.id.toolbar);
 
         detailActivity.setSupportActionBar(toolbar);
-        if(detailActivity.getSupportActionBar()!=null) {
+        if (detailActivity.getSupportActionBar() != null) {
             detailActivity.getSupportActionBar().setDisplayHomeAsUpEnabled(true);
             detailActivity.getSupportActionBar().setDisplayShowHomeEnabled(true);
         }
@@ -119,13 +116,13 @@ public class DetailActivityFragment extends Fragment {
         ((TextView) rootView.findViewById(R.id.date))
                 .setText(info.getDate());
         ((TextView) rootView.findViewById(R.id.rates))
-                .setText(String.format(Locale.getDefault(),"%s / 10",info.getVote()));
-        TextView overview =  ((TextView) rootView.findViewById(R.id.overView));
+                .setText(String.format(Locale.getDefault(), "%s / 10", info.getVote()));
+        TextView overview = ((TextView) rootView.findViewById(R.id.overView));
         overview.setText(info.getOverView());
         overview.setContentDescription(info.getOverView());
 
 
-        thisMovieData  = new VideoAndReviewData();
+        thisMovieData = new VideoAndReviewData();
         userReviews = new ArrayList<>();
         userNames = new ArrayList<>();
 
@@ -135,7 +132,7 @@ public class DetailActivityFragment extends Fragment {
                 new HorizontalRecyclerTrailerAdapter(getContext(),
                         thisMovieData.TrailerImageLink,
                         thisMovieData.TrailerLink);
-        mTrailerRecycler = (RecyclerView)rootView.findViewById(R.id.trailer_recycler);
+        mTrailerRecycler = (RecyclerView) rootView.findViewById(R.id.trailer_recycler);
         LinearLayoutManager horizontalLayoutManagaer
                 = new LinearLayoutManager(getContext(), LinearLayoutManager.HORIZONTAL, false);
         mTrailerRecycler.setLayoutManager(horizontalLayoutManagaer);
@@ -148,7 +145,7 @@ public class DetailActivityFragment extends Fragment {
                 new HorizontalReviewAdapter(getContext(),
                         thisMovieData.ReviewAuthor,
                         thisMovieData.ReviewContent);
-        mReviewRecycler = (RecyclerView)rootView.findViewById(R.id.review_recycler);
+        mReviewRecycler = (RecyclerView) rootView.findViewById(R.id.review_recycler);
         LinearLayoutManager horizontalLayoutManagaer2
                 = new LinearLayoutManager(getContext(), LinearLayoutManager.HORIZONTAL, false);
         mReviewRecycler.setLayoutManager(horizontalLayoutManagaer2);
@@ -158,7 +155,7 @@ public class DetailActivityFragment extends Fragment {
                 new HorizontalReviewAdapter(getContext(),
                         userNames,
                         userReviews);
-        mFireReviewRecycler = (RecyclerView)rootView.findViewById(R.id.user_review_recycler);
+        mFireReviewRecycler = (RecyclerView) rootView.findViewById(R.id.user_review_recycler);
         LinearLayoutManager horizontalLayoutManagaer3
                 = new LinearLayoutManager(getContext(), LinearLayoutManager.HORIZONTAL, false);
         mFireReviewRecycler.setLayoutManager(horizontalLayoutManagaer3);
@@ -176,30 +173,33 @@ public class DetailActivityFragment extends Fragment {
 
         // Load images in toolbar and image poster
         Picasso.with(getActivity()) //
-                .load(MOVIE_PIC_BASE_URL+info.getPIC()) //
+                .load(MOVIE_PIC_BASE_URL + info.getPIC()) //
                 .placeholder(R.drawable.placeholder) //
                 .resize(138, 207)
                 .into(img);
 
         Picasso.with(getActivity())
-                .load(MOVIE_PIC_BASE_URL+info.getPIC())
+                .load(MOVIE_PIC_BASE_URL + info.getPIC())
                 .into(new Target() {
                     @Override
-                    public void onBitmapLoaded (final Bitmap bitmap, Picasso.LoadedFrom from){
+                    public void onBitmapLoaded(final Bitmap bitmap, Picasso.LoadedFrom from) {
                         img2.setImageBitmap(bitmap);
                     }
+
                     @Override
                     public void onPrepareLoad(Drawable placeHolderDrawable) {
                         img2.setImageResource(R.drawable.placeholder);
                     }
+
                     @Override
-                    public void onBitmapFailed(Drawable errorDrawable) {}
+                    public void onBitmapFailed(Drawable errorDrawable) {
+                    }
                 });
 
 
         b = (FloatingActionButton) rootView.findViewById(R.id.button);
         Cursor c = mContext.getContentResolver().query(Contract.Movie.URI, null, Contract.Movie.COLUMN_MOVIE_ID + " = " + info.id, null, null);
-        if(c!=null) {
+        if (c != null) {
             if (c.getCount() == 0) {
                 isFav = false;
                 b.getDrawable().setColorFilter(ContextCompat.getColor(mContext, R.color.white), PorterDuff.Mode.SRC_IN);
@@ -212,12 +212,10 @@ public class DetailActivityFragment extends Fragment {
 
         b.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
-                if(isFav)
-                {
-                    mContext.getContentResolver().delete(Contract.Movie.URI,Contract.Movie.COLUMN_MOVIE_ID + "=" + info.id, null);
-                    b.getDrawable().setColorFilter(ContextCompat.getColor(mContext,R.color.white), PorterDuff.Mode.SRC_IN);
-                }
-                else {
+                if (isFav) {
+                    mContext.getContentResolver().delete(Contract.Movie.URI, Contract.Movie.COLUMN_MOVIE_ID + "=" + info.id, null);
+                    b.getDrawable().setColorFilter(ContextCompat.getColor(mContext, R.color.white), PorterDuff.Mode.SRC_IN);
+                } else {
                     ContentValues quoteCV = new ContentValues();
                     quoteCV.put(Contract.Movie.COLUMN_MOVIE_ID, info.id);
                     quoteCV.put(Contract.Movie.COLUMN_TITLE, info.Title);
@@ -226,7 +224,7 @@ public class DetailActivityFragment extends Fragment {
                     quoteCV.put(Contract.Movie.COLUMN_RATE, info.Vote);
                     quoteCV.put(Contract.Movie.COLUMN_OVERVIEW, info.OverView);
                     mContext.getContentResolver().insert(Contract.Movie.URI, quoteCV);
-                    b.getDrawable().setColorFilter(ContextCompat.getColor(mContext,R.color.material_red_700), PorterDuff.Mode.SRC_IN);
+                    b.getDrawable().setColorFilter(ContextCompat.getColor(mContext, R.color.material_red_700), PorterDuff.Mode.SRC_IN);
                 }
                 Intent dataUpdatedIntent = new Intent(Contract.ACTION_DATA_UPDATED);
                 mContext.sendBroadcast(dataUpdatedIntent);
@@ -234,21 +232,20 @@ public class DetailActivityFragment extends Fragment {
         });
 
 
-        DatabaseReference dbref =  FirebaseDatabase.getInstance().getReference();
+        DatabaseReference dbref = FirebaseDatabase.getInstance().getReference();
         dbref.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
-                if(dataSnapshot!=null)
-                {
+                if (dataSnapshot != null) {
                     userNames.clear();
                     userReviews.clear();
-                    Iterable<DataSnapshot> ds= dataSnapshot.child("movies").child(String.valueOf(info.getId())).child("user_reviews").getChildren();
-                        for (DataSnapshot das : ds) {
-                            String name = dataSnapshot.child("users").child(das.getKey()).child("info").child("name").getValue(String.class);
-                            String review = das.child("review").getValue(String.class);
-                            userNames.add(name == null ? "" : name);
-                            userReviews.add(review == null ? "" : review);
-                        }
+                    Iterable<DataSnapshot> ds = dataSnapshot.child("movies").child(String.valueOf(info.getId())).child("user_reviews").getChildren();
+                    for (DataSnapshot das : ds) {
+                        String name = dataSnapshot.child("users").child(das.getKey()).child("info").child("name").getValue(String.class);
+                        String review = das.child("review").getValue(String.class);
+                        userNames.add(name == null ? "" : name);
+                        userReviews.add(review == null ? "" : review);
+                    }
                     mFireReviewAdapter.notifyDataSetChanged();
                 }
             }
@@ -258,12 +255,12 @@ public class DetailActivityFragment extends Fragment {
 
             }
         });
-        Button reviewButton = (Button)rootView.findViewById(R.id.add_review);
+        Button reviewButton = (Button) rootView.findViewById(R.id.add_review);
         reviewButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent intent = new Intent(getContext(),ReviewEntryActivity.class);
-                intent.putExtra(Contract.Movie.COLUMN_MOVIE_ID,info.getId());
+                Intent intent = new Intent(getContext(), ReviewEntryActivity.class);
+                intent.putExtra(Contract.Movie.COLUMN_MOVIE_ID, info.getId());
                 getContext().startActivity(intent);
             }
         });
@@ -274,7 +271,7 @@ public class DetailActivityFragment extends Fragment {
     @Override
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
-        outState.putSerializable(Contract.Movie.TABLE_NAME,info);
+        outState.putSerializable(Contract.Movie.TABLE_NAME, info);
     }
 
     @Override
@@ -287,29 +284,30 @@ public class DetailActivityFragment extends Fragment {
         }
         return super.onOptionsItemSelected(item);
     }
+
     public void updateDetails(int idHere) {
 
-        FetchTrailerReview moviesTask = new FetchTrailerReview() ;
-        moviesTask.execute(idHere) ;
+        FetchTrailerReview moviesTask = new FetchTrailerReview();
+        moviesTask.execute(idHere);
 
     }
+
     @Override
-    public void onStart()
-    {
+    public void onStart() {
         super.onStart();
         updateDetails(info.getId());
     }
 
-    private class FetchTrailerReview extends AsyncTask< Integer ,Void ,VideoAndReviewData > {
+    private class FetchTrailerReview extends AsyncTask<Integer, Void, VideoAndReviewData> {
 
-        private final String LOG_TAG = FetchTrailerReview.class.getSimpleName() ;
+        private final String LOG_TAG = FetchTrailerReview.class.getSimpleName();
 
-        private VideoAndReviewData getMoviesDataFromJson(String MoviesJsonStrVideo , String MoviesJsonStrReview)
+        private VideoAndReviewData getMoviesDataFromJson(String MoviesJsonStrVideo, String MoviesJsonStrReview)
                 throws JSONException {
 
             // These are the names of the JSON objects that need to be extracted.
             final String VIDEO_RESULTS = "results";
-            final String Video_key= "key";
+            final String Video_key = "key";
             final String Video_name = "name";
             final String REVIEW_RESULTS = "results";
             final String Review_author = "author";
@@ -321,16 +319,16 @@ public class DetailActivityFragment extends Fragment {
             JSONArray VideoArray = VideoJson.getJSONArray(VIDEO_RESULTS);
             JSONArray ReviewArray = ReviewJson.getJSONArray(REVIEW_RESULTS);
             VideoAndReviewData mData = new VideoAndReviewData();
-            for(int i = 0; i < VideoArray.length(); i++) {
+            for (int i = 0; i < VideoArray.length(); i++) {
                 JSONObject Movie = VideoArray.getJSONObject(i);
-                mData.TrailerName.add(Movie.getString(Video_name) );
-                mData.TrailerLink.add( YOUTUBE_LINK_BASE_URL+Movie.getString(Video_key));
-                mData.TrailerImageLink.add(TRAILER_PIC_BASE_URL+Movie.getString(Video_key)+TRAILER_PIC_FOOTER_NAME);
+                mData.TrailerName.add(Movie.getString(Video_name));
+                mData.TrailerLink.add(YOUTUBE_LINK_BASE_URL + Movie.getString(Video_key));
+                mData.TrailerImageLink.add(TRAILER_PIC_BASE_URL + Movie.getString(Video_key) + TRAILER_PIC_FOOTER_NAME);
             }
-            for(int i = 0; i < ReviewArray.length(); i++) {
+            for (int i = 0; i < ReviewArray.length(); i++) {
                 JSONObject Movie = ReviewArray.getJSONObject(i);
-                mData.ReviewAuthor.add( Movie.getString(Review_author) );
-                mData.ReviewContent.add( Movie.getString(Review_content) );
+                mData.ReviewAuthor.add(Movie.getString(Review_author));
+                mData.ReviewContent.add(Movie.getString(Review_content));
 
             }
             return mData;
@@ -338,7 +336,7 @@ public class DetailActivityFragment extends Fragment {
 
         @Override
 
-        protected VideoAndReviewData doInBackground(Integer ... params) {
+        protected VideoAndReviewData doInBackground(Integer... params) {
 
 
             // These two need to be declared outside the try/catch
@@ -357,9 +355,9 @@ public class DetailActivityFragment extends Fragment {
                 // Possible parameters are avaiable at OWM's forecast API page, at
                 // http://openweathermap.org/API#forecast
                 //http://api.themoviedb.org/3/movie/popular?api_key=179a8cf9fc6fab0def62671610a2704b
-                final String YOUTUBE_TRAILER_BASE_URL = "https://api.themoviedb.org/3/movie/"+params[0]+"/videos?";
-                final String REVIEW_BASE_URL = "https://api.themoviedb.org/3/movie/"+ params[0]+"/reviews?";
-                final String APPID_PARAM ="api_key";
+                final String YOUTUBE_TRAILER_BASE_URL = "https://api.themoviedb.org/3/movie/" + params[0] + "/videos?";
+                final String REVIEW_BASE_URL = "https://api.themoviedb.org/3/movie/" + params[0] + "/reviews?";
+                final String APPID_PARAM = "api_key";
 
 
                 Uri builtUrivideos = Uri.parse(YOUTUBE_TRAILER_BASE_URL).buildUpon()
@@ -414,11 +412,11 @@ public class DetailActivityFragment extends Fragment {
                     bufferR.append(lineR).append("\n");
                 }
 
-                if (bufferV.length() == 0  ) {
+                if (bufferV.length() == 0) {
                     // Stream was empty.  No point in parsing.
                     return null;
                 }
-                if (bufferR.length() == 0  ) {
+                if (bufferR.length() == 0) {
                     // Stream was empty.  No point in parsing.
                     return null;
                 }
@@ -455,31 +453,28 @@ public class DetailActivityFragment extends Fragment {
                 }
             }
 
-            try{
-                return getMoviesDataFromJson(moviesJsonStrVideo , moviesJsonStrReview);
-            }
-            catch (JSONException e)
-            {
-                Log.e(LOG_TAG,e.getMessage(),e);
+            try {
+                return getMoviesDataFromJson(moviesJsonStrVideo, moviesJsonStrReview);
+            } catch (JSONException e) {
+                Log.e(LOG_TAG, e.getMessage(), e);
                 e.printStackTrace();
             }
             return null;
         }
+
         @Override
-        protected void onPostExecute(VideoAndReviewData result)
-        {
-            if(result != null)
-            {
+        protected void onPostExecute(VideoAndReviewData result) {
+            if (result != null) {
                 thisMovieData.TrailerName.clear();
                 thisMovieData.TrailerLink.clear();
                 thisMovieData.TrailerImageLink.clear();
                 thisMovieData.ReviewAuthor.clear();
                 thisMovieData.ReviewContent.clear();
-                thisMovieData =  result ;
+                thisMovieData = result;
 
             }
 
-            if(!thisMovieData.TrailerName.isEmpty() && !thisMovieData.TrailerLink.isEmpty()) {
+            if (!thisMovieData.TrailerName.isEmpty() && !thisMovieData.TrailerLink.isEmpty()) {
                 mTrailerAdapter =
                         new HorizontalRecyclerTrailerAdapter(getContext(),
                                 thisMovieData.TrailerImageLink,
@@ -491,20 +486,19 @@ public class DetailActivityFragment extends Fragment {
 
             if (thisMovieData.ReviewContent.isEmpty()) {
                 apiReviewSection.setVisibility(View.GONE);
-            }
-            else
-            {
+            } else {
                 apiReviewSection.setVisibility(View.VISIBLE);
-                mReviewAdapter = new HorizontalReviewAdapter(getContext(),thisMovieData.ReviewAuthor,thisMovieData.ReviewContent);
+                mReviewAdapter = new HorizontalReviewAdapter(getContext(), thisMovieData.ReviewAuthor, thisMovieData.ReviewContent);
                 mReviewRecycler.setAdapter(mReviewAdapter);
-               mReviewAdapter.notifyDataSetChanged();
+                mReviewAdapter.notifyDataSetChanged();
             }
-
 
 
         }
 
-    } ;
+    }
+
+    ;
 
 
 }

@@ -4,84 +4,84 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="com.magdy.mguide.UI.RegisterActivity"
-    android:background="@color/back_grey">
+    android:background="@color/back_grey"
+    tools:context="com.magdy.mguide.UI.RegisterActivity">
 
     <android.support.v4.widget.NestedScrollView
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
 
-    <android.support.v7.widget.CardView
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        app:cardCornerRadius="2dp"
-        app:cardUseCompatPadding="true"
-        android:layout_margin="16dp"
-        android:padding="@dimen/activity_horizontal_margin">
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:gravity="center_horizontal"
-        android:orientation="vertical"
-        >
-
-        <EditText
-            android:layout_marginTop="24dp"
+        <android.support.v7.widget.CardView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:paddingBottom="16dp"
-            android:paddingTop="16dp"
-            android:paddingEnd="16dp"
-            android:paddingStart="16dp"
-            android:inputType="textPersonName"
-            android:layout_margin="@dimen/activity_horizontal_margin"
+            android:layout_margin="16dp"
+            android:padding="@dimen/activity_horizontal_margin"
+            app:cardCornerRadius="2dp"
+            app:cardUseCompatPadding="true">
 
-            android:ems="10"
-            android:id="@+id/name"
-            android:hint="@string/your_name"
-            tools:targetApi="cupcake" />
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:gravity="center_horizontal"
+                android:orientation="vertical">
 
-        <EditText
-            android:layout_marginTop="24dp"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:ems="10"
-            android:inputType="textEmailAddress"
-            android:paddingBottom="16dp"
-            android:paddingTop="16dp"
-            android:paddingEnd="16dp"
-            android:paddingStart="16dp"
-            android:layout_margin="@dimen/activity_horizontal_margin"
+                <EditText
+                    android:id="@+id/name"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="@dimen/activity_horizontal_margin"
+                    android:layout_marginTop="24dp"
+                    android:ems="10"
+                    android:hint="@string/your_name"
+                    android:inputType="textPersonName"
+                    android:paddingBottom="16dp"
 
-            android:id="@+id/email"
-            android:hint="@string/email_hint"
-            tools:targetApi="cupcake" />
+                    android:paddingEnd="16dp"
+                    android:paddingStart="16dp"
+                    android:paddingTop="16dp"
+                    tools:targetApi="cupcake" />
 
-        <EditText
-            android:layout_marginTop="24dp"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:inputType="textPassword"
-            android:ems="10"
-            android:paddingBottom="16dp"
-            android:paddingTop="16dp"
-            android:paddingStart="16dp"
-            android:paddingEnd="16dp"
-            android:layout_margin="@dimen/activity_horizontal_margin"
-            android:id="@+id/pass"
-            android:hint="@string/pass_hint" />
+                <EditText
+                    android:id="@+id/email"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="@dimen/activity_horizontal_margin"
+                    android:layout_marginTop="24dp"
+                    android:ems="10"
+                    android:hint="@string/email_hint"
+                    android:inputType="textEmailAddress"
+                    android:paddingBottom="16dp"
+                    android:paddingEnd="16dp"
 
-        <Button
-            android:layout_marginTop="24dp"
-            android:text="@string/register"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:id="@+id/register"
-            android:textColor="@color/white"
-            android:background="@drawable/rounded_button"
-            android:layout_margin="@dimen/activity_horizontal_margin"
-            android:textSize="24sp" />
-    </LinearLayout>
-    </android.support.v7.widget.CardView>
+                    android:paddingStart="16dp"
+                    android:paddingTop="16dp"
+                    tools:targetApi="cupcake" />
+
+                <EditText
+                    android:id="@+id/pass"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="@dimen/activity_horizontal_margin"
+                    android:layout_marginTop="24dp"
+                    android:ems="10"
+                    android:hint="@string/pass_hint"
+                    android:inputType="textPassword"
+                    android:paddingBottom="16dp"
+                    android:paddingEnd="16dp"
+                    android:paddingStart="16dp"
+                    android:paddingTop="16dp" />
+
+                <Button
+                    android:id="@+id/register"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="@dimen/activity_horizontal_margin"
+                    android:layout_marginTop="24dp"
+                    android:background="@drawable/rounded_button"
+                    android:text="@string/register"
+                    android:textColor="@color/white"
+                    android:textSize="24sp" />
+            </LinearLayout>
+        </android.support.v7.widget.CardView>
     </android.support.v4.widget.NestedScrollView>
 </android.support.design.widget.CoordinatorLayout>

@@ -36,7 +36,7 @@ public class MovieWidgetProvider extends AppWidgetProvider {
             remoteViews.setOnClickPendingIntent(R.id.widget, pendingIntent);
 
             // Set up the collection
-                setRemoteAdapter(context, remoteViews);
+            setRemoteAdapter(context, remoteViews);
 
             Intent clickIntentTemplate = new Intent(context, DetailActivity.class);
 
@@ -57,6 +57,7 @@ public class MovieWidgetProvider extends AppWidgetProvider {
         super.onUpdate(context, appWidgetManager, appWidgetIds);
 
     }
+
     @Override
     public void onReceive(Context context, Intent intent) {
         super.onReceive(context, intent);
@@ -67,6 +68,7 @@ public class MovieWidgetProvider extends AppWidgetProvider {
             appWidgetManager.notifyAppWidgetViewDataChanged(appWidgetIds, R.id.widget_grid);
         }
     }
+
     /**
      * Sets the remote adapter used to fill in the list items
      *

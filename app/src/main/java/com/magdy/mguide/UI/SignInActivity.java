@@ -2,10 +2,10 @@ package com.magdy.mguide.UI;
 
 import android.app.ProgressDialog;
 import android.content.Intent;
+import android.os.Bundle;
 import android.os.PersistableBundle;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
 import android.text.TextUtils;
 import android.view.View;
 import android.widget.Button;
@@ -19,24 +19,20 @@ import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
-
 import com.magdy.mguide.R;
 
-public class SignInActivity extends AppCompatActivity implements View.OnClickListener{
+public class SignInActivity extends AppCompatActivity implements View.OnClickListener {
 
-
-    Button loginBut, signupBut ;
-    EditText emailt, passt ;
-    TextView forgotT;
-
-    ProgressDialog progressDialog;
-    DatabaseReference mDatabase;
-
-    FirebaseAuth mauth ;
-    FirebaseAuth.AuthStateListener mauthListener;
 
     final static String EMAIL_TEXT = "email";
     final static String PASS_TEXT = "pass";
+    Button loginBut, signupBut;
+    EditText emailt, passt;
+    TextView forgotT;
+    ProgressDialog progressDialog;
+    DatabaseReference mDatabase;
+    FirebaseAuth mauth;
+    FirebaseAuth.AuthStateListener mauthListener;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -55,8 +51,7 @@ public class SignInActivity extends AppCompatActivity implements View.OnClickLis
         emailt = (EditText) findViewById(R.id.emailText);
         passt = (EditText) findViewById(R.id.passwordText);
 
-        if(savedInstanceState!=null)
-        {
+        if (savedInstanceState != null) {
             emailt.setText(savedInstanceState.getString(EMAIL_TEXT));
             passt.setText(savedInstanceState.getString(PASS_TEXT));
         }
@@ -67,8 +62,7 @@ public class SignInActivity extends AppCompatActivity implements View.OnClickLis
         mauthListener = new FirebaseAuth.AuthStateListener() {
             @Override
             public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
-                if(firebaseAuth.getCurrentUser()!=null)
-                {
+                if (firebaseAuth.getCurrentUser() != null) {
                     finish();
                 }
 
@@ -88,47 +82,39 @@ public class SignInActivity extends AppCompatActivity implements View.OnClickLis
         super.onSaveInstanceState(outState, outPersistentState);
         String email = emailt.getText().toString();
         String pass = passt.getText().toString();
-        outState.putString(EMAIL_TEXT,(emailt!=null||TextUtils.isEmpty(email))?email:"");
-        outState.putString(PASS_TEXT,(passt!=null||TextUtils.isEmpty(pass))?pass:"");
+        outState.putString(EMAIL_TEXT, (emailt != null || TextUtils.isEmpty(email)) ? email : "");
+        outState.putString(PASS_TEXT, (passt != null || TextUtils.isEmpty(pass)) ? pass : "");
     }
 
     @Override
     public void onClick(View view) {
 
-        if (view==loginBut)
-        {
+        if (view == loginBut) {
             setUpUser();
-        }
-        else  if (view==signupBut)
-        {
-            Intent intent = new Intent(getBaseContext(),RegisterActivity.class);
+        } else if (view == signupBut) {
+            Intent intent = new Intent(getBaseContext(), RegisterActivity.class);
             intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
             startActivity(intent);
 
         }
     }
 
-    private void setUpUser()
-    {
+    private void setUpUser() {
         String email = emailt.getText().toString();
         String pass = passt.getText().toString();
-        progressDialog.setMessage("Signing in ...");
+        progressDialog.setMessage(getResources().getString(R.string.signing));
         progressDialog.show();
-        if(TextUtils.isEmpty(email)|| TextUtils.isEmpty(pass) )
-        {
-            Toast.makeText(getBaseContext(),"email or password is empty",Toast.LENGTH_LONG).show();
+        if (TextUtils.isEmpty(email) || TextUtils.isEmpty(pass)) {
+            Toast.makeText(getBaseContext(), getResources().getString(R.string.email_pass_empty), Toast.LENGTH_LONG).show();
             progressDialog.dismiss();
-        }
-        else
-            mauth.signInWithEmailAndPassword(email,pass).addOnCompleteListener(new OnCompleteListener<AuthResult>() {
+        } else
+            mauth.signInWithEmailAndPassword(email, pass).addOnCompleteListener(new OnCompleteListener<AuthResult>() {
                 @Override
                 public void onComplete(@NonNull Task<AuthResult> task) {
-                    if(!task.isSuccessful())
-                    {
-                        Toast.makeText(getBaseContext(),"The Log in failed",Toast.LENGTH_LONG).show();
+                    if (!task.isSuccessful()) {
+                        Toast.makeText(getBaseContext(), getResources().getString(R.string.log_failed), Toast.LENGTH_LONG).show();
                         progressDialog.dismiss();
-                    }
-                    else {
+                    } else {
                         progressDialog.dismiss();
                         Intent i = new Intent(getBaseContext(), MainActivity.class);
                         startActivity(i);
@@ -137,7 +123,6 @@ public class SignInActivity extends AppCompatActivity implements View.OnClickLis
 
                 }
             });
-
 
 
     }
