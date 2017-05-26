@@ -31,8 +31,7 @@
                 android:layout_height="match_parent"
                 android:background="@color/back_grey"
                 android:orientation="vertical"
-                tools:layout="@layout/fragment_main">
-            </FrameLayout>
+                tools:layout="@layout/fragment_main"></FrameLayout>
         </LinearLayout>
     </android.support.design.widget.CoordinatorLayout>
 

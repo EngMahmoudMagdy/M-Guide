@@ -306,6 +306,7 @@ public class MainActivity extends AppCompatActivity implements ListInfoListener 
             DetailActivityFragment detailActivityFragment = new DetailActivityFragment();
             Bundle extra = new Bundle();
             extra.putSerializable(Contract.Movie.TABLE_NAME, info);
+            extra.putBoolean("pane", mTwoPane);
             detailActivityFragment.setArguments(extra);
             getSupportFragmentManager().beginTransaction().replace(R.id.fl_panel2, detailActivityFragment).commit();
 
@@ -313,6 +314,7 @@ public class MainActivity extends AppCompatActivity implements ListInfoListener 
 
             Intent intent = new Intent(this, DetailActivity.class);
             intent.putExtra(Contract.Movie.TABLE_NAME, info);
+            intent.putExtra("pane", mTwoPane);
             startActivity(intent);
         }
 

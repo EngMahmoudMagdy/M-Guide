@@ -14,6 +14,7 @@ import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
+import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
@@ -72,7 +73,7 @@ public class DetailActivityFragment extends Fragment {
     public RecyclerView mFireReviewRecycler;
     public LinearLayout apiReviewSection;
     Context mContext;
-    DetailActivity detailActivity;
+    AppCompatActivity detailActivity;
     ImageView img2;
     ImageView img;
     boolean isFav = false;
@@ -80,6 +81,7 @@ public class DetailActivityFragment extends Fragment {
     FloatingActionButton b;
     List<String> userReviews, userNames;
     CollapsingToolbarLayout collapsingToolbarLayout;
+    boolean isTwoPane = false;
 
     public DetailActivityFragment() {
     }
@@ -90,10 +92,14 @@ public class DetailActivityFragment extends Fragment {
 
 
         View rootView = inflater.inflate(R.layout.fragment_detail, container, false);
-        if (savedInstanceState == null)
+        if (savedInstanceState == null) {
             info = (Information) getArguments().getSerializable(Contract.Movie.TABLE_NAME);
-        else
+            isTwoPane = getArguments().getBoolean("pane");
+        } else {
             info = (Information) savedInstanceState.getSerializable(Contract.Movie.TABLE_NAME);
+            isFav = savedInstanceState.getBoolean("fav");
+            isTwoPane = savedInstanceState.getBoolean("pane");
+        }
 
         mContext = getActivity();
 
@@ -102,15 +108,16 @@ public class DetailActivityFragment extends Fragment {
         collapsingToolbarLayout.setContentDescription(info.getTitle());
         TextView title = (TextView) rootView.findViewById(R.id.title);
         title.setText(info.getTitle());
-
-        detailActivity = (DetailActivity) getActivity();
-
         Toolbar toolbar = (Toolbar) rootView.findViewById(R.id.toolbar);
-
-        detailActivity.setSupportActionBar(toolbar);
-        if (detailActivity.getSupportActionBar() != null) {
-            detailActivity.getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-            detailActivity.getSupportActionBar().setDisplayShowHomeEnabled(true);
+        if (isTwoPane) {
+            detailActivity = (MainActivity) getActivity();
+        } else {
+            detailActivity = (DetailActivity) getActivity();
+            detailActivity.setSupportActionBar(toolbar);
+            if (detailActivity.getSupportActionBar() != null) {
+                detailActivity.getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+                detailActivity.getSupportActionBar().setDisplayShowHomeEnabled(true);
+            }
         }
 
         ((TextView) rootView.findViewById(R.id.date))
@@ -198,7 +205,7 @@ public class DetailActivityFragment extends Fragment {
 
 
         b = (FloatingActionButton) rootView.findViewById(R.id.button);
-        Cursor c = mContext.getContentResolver().query(Contract.Movie.URI, null, Contract.Movie.COLUMN_MOVIE_ID + " = " + info.id, null, null);
+        Cursor c = mContext.getContentResolver().query(Contract.Movie.URI, null, Contract.Movie.COLUMN_MOVIE_ID + " = " + info.getId(), null, null);
         if (c != null) {
             if (c.getCount() == 0) {
                 isFav = false;
@@ -213,7 +220,7 @@ public class DetailActivityFragment extends Fragment {
         b.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
                 if (isFav) {
-                    mContext.getContentResolver().delete(Contract.Movie.URI, Contract.Movie.COLUMN_MOVIE_ID + "=" + info.id, null);
+                    mContext.getContentResolver().delete(Contract.Movie.URI, Contract.Movie.COLUMN_MOVIE_ID + "=" + info.getId(), null);
                     b.getDrawable().setColorFilter(ContextCompat.getColor(mContext, R.color.white), PorterDuff.Mode.SRC_IN);
                 } else {
                     ContentValues quoteCV = new ContentValues();
@@ -226,6 +233,7 @@ public class DetailActivityFragment extends Fragment {
                     mContext.getContentResolver().insert(Contract.Movie.URI, quoteCV);
                     b.getDrawable().setColorFilter(ContextCompat.getColor(mContext, R.color.material_red_700), PorterDuff.Mode.SRC_IN);
                 }
+                isFav = !isFav;
                 Intent dataUpdatedIntent = new Intent(Contract.ACTION_DATA_UPDATED);
                 mContext.sendBroadcast(dataUpdatedIntent);
             }
@@ -272,6 +280,9 @@ public class DetailActivityFragment extends Fragment {
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
         outState.putSerializable(Contract.Movie.TABLE_NAME, info);
+        outState.putBoolean("pane", isTwoPane);
+        outState.putBoolean("fav", isFav);
+
     }
 
     @Override
@@ -279,7 +290,8 @@ public class DetailActivityFragment extends Fragment {
         // Handle action bar item clicks here. The action bar will
         // automatically handle clicks on the Home/Up button, so long
         // as you specify a parent activity in AndroidManifest.xml.
-        if (item.getItemId() == android.R.id.home) {
+
+        if (item.getItemId() == android.R.id.home && !isTwoPane) {
             detailActivity.finish();
         }
         return super.onOptionsItemSelected(item);
