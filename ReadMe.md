@@ -2,33 +2,33 @@
 this is __Movies Guide__ App called **M-Guide**
 	this app can show you the latest popular movies and the Most rated movies too 
 	
-*## First:
+*## First
 
 	* The Popular movies is shown with its photos and names on GridView in the first 
 	<br />
 	![screenshot here](/screens/1.png)
 	![screenshot here](/screens/11.png)
 	<br />
-*## Second:
+*## Second
 
 	*The details of every movie shows like this
 	<br />
 	![screenshot here](/screens/3.png)
 	![screenshot here](/screens/4.png)
 	<br />
-## Third:
+## Third
 
 	* there is a widget for home screen
 	<br />
 	![screenshot here](/screens/5.png)
 	<br />
-## Forth:
+## Forth
 
 	* Navigation drawer of account settings and options 
 	<br />
 	![screenshot here](/screens/2.png)
 	<br />
-*## Fifth:
+*## Fifth
 
 	* Tablet support
 	* 10 inch tablets
