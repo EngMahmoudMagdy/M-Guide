@@ -12,14 +12,17 @@ this is __Movies Guide__ App called **M-Guide**
 	<br />
 	![screenshot here](/screens/3.png)
 	![screenshot here](/screens/4.png)
+	<br />
 *##Third:
 	*there is a widget for home screen
 	<br />
 	![screenshot here](/screens/5.png)
+	<br />
 *##Forth:
 	*Navigation drawer of account settings and options 
 	<br />
 	![screenshot here](/screens/2.png)
+	<br />
 *##Fifth:
 	*#Tablet support
 	*10 inch tablets
