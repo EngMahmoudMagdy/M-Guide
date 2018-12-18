@@ -1,87 +1,97 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.design.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
+<android.support.design.widget.CoordinatorLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/back_grey"
-    tools:context="com.magdy.mguide.UI.RegisterActivity">
-
+    android:orientation="vertical"
+    android:id="@+id/coordinator"
+    android:gravity="center_horizontal">
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@android:color/black"
+        android:elevation="100dp"
+        android:visibility="gone"
+        android:id="@+id/progress"
+        android:alpha=".7">
+        <ProgressBar
+            android:id="@+id/progressBar_cyclic"
+            android:layout_width="75dp"
+            android:layout_height="75dp"
+            android:layout_gravity="center"
+            />
+    </FrameLayout>
     <android.support.v4.widget.NestedScrollView
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
-
-        <android.support.v7.widget.CardView
+        android:layout_height="match_parent"
+        android:background="@color/colorPrimary"
+        xmlns:android="http://schemas.android.com/apk/res/android">
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_margin="16dp"
+            android:gravity="center_horizontal"
+            android:orientation="vertical"
             android:padding="@dimen/activity_horizontal_margin"
-            app:cardCornerRadius="2dp"
-            app:cardUseCompatPadding="true">
-
-            <LinearLayout
+            android:background="@drawable/rounded"
+            android:layout_margin="8dp"
+            >
+            <EditText
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:gravity="center_horizontal"
-                android:orientation="vertical">
+                android:layout_height="wrap_content"
+                android:inputType="textPersonName"
+                android:padding="10dp"
+                android:ems="10"
+                android:id="@+id/first_name"
+                android:hint="@string/first_name" />
+            <EditText
+                android:layout_marginTop="20dp"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:inputType="textPersonName"
+                android:padding="10dp"
+                android:ems="10"
+                android:id="@+id/last_name"
+                android:hint="@string/last_name" />
 
-                <EditText
-                    android:id="@+id/name"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_margin="@dimen/activity_horizontal_margin"
-                    android:layout_marginTop="24dp"
-                    android:ems="10"
-                    android:hint="@string/your_name"
-                    android:inputType="textPersonName"
-                    android:paddingBottom="16dp"
-
-                    android:paddingEnd="16dp"
-                    android:paddingStart="16dp"
-                    android:paddingTop="16dp"
-                    tools:targetApi="cupcake" />
-
-                <EditText
-                    android:id="@+id/email"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_margin="@dimen/activity_horizontal_margin"
-                    android:layout_marginTop="24dp"
-                    android:ems="10"
-                    android:hint="@string/email_hint"
-                    android:inputType="textEmailAddress"
-                    android:paddingBottom="16dp"
-                    android:paddingEnd="16dp"
-
-                    android:paddingStart="16dp"
-                    android:paddingTop="16dp"
-                    tools:targetApi="cupcake" />
-
-                <EditText
-                    android:id="@+id/pass"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_margin="@dimen/activity_horizontal_margin"
-                    android:layout_marginTop="24dp"
-                    android:ems="10"
-                    android:hint="@string/pass_hint"
-                    android:inputType="textPassword"
-                    android:paddingBottom="16dp"
-                    android:paddingEnd="16dp"
-                    android:paddingStart="16dp"
-                    android:paddingTop="16dp" />
-
-                <Button
-                    android:id="@+id/register"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_margin="@dimen/activity_horizontal_margin"
-                    android:layout_marginTop="24dp"
-                    android:background="@drawable/rounded_button"
-                    android:text="@string/register"
-                    android:textColor="@color/white"
-                    android:textSize="24sp" />
-            </LinearLayout>
-        </android.support.v7.widget.CardView>
+            <EditText
+                android:layout_marginTop="20dp"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:inputType="textEmailAddress"
+                android:ems="10"
+                android:padding="10dp"
+                android:id="@+id/email"
+                android:hint="@string/email_here" />
+            <EditText
+                android:layout_marginTop="20dp"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:inputType="textPassword"
+                android:ems="10"
+                android:padding="10dp"
+                android:id="@+id/pass"
+                android:hint="@string/pass" />
+            <EditText
+                android:layout_marginTop="20dp"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:inputType="textPassword"
+                android:ems="10"
+                android:padding="10dp"
+                android:id="@+id/conf_pass"
+                android:imeOptions="actionDone"
+                android:hint="@string/conf_pass" />
+            <Button
+                android:layout_marginTop="20dp"
+                android:layout_marginBottom="8dp"
+                android:text="@string/register"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:id="@+id/register"
+                android:textColor="@android:color/white"
+                android:theme="@style/MyButton"
+                android:textSize="20sp" />
+        </LinearLayout>
     </android.support.v4.widget.NestedScrollView>
 </android.support.design.widget.CoordinatorLayout>

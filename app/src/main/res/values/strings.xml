@@ -33,6 +33,8 @@
     <string name="email_hint">Email</string>
     <string name="pass_hint">Password</string>
     <string name="or">OR</string>
+    <string name="facebook_app_id">661769914193527</string>
+    <string name="fb_login_protocol_scheme">fb661769914193527</string>
     <string name="sign_up">Sign up</string>
     <string name="your_name">your name</string>
     <string name="register">Register</string>
@@ -46,5 +48,28 @@
     <string name="log_failed">The Log is failed</string>
     <string name="sign_up_failed">Sign up failed</string>
     <string name="retry">RETRY</string>
+    <string name="write_email">Write email here</string>
+    <string name="email_here">email</string>
+    <string name="send">Send</string>
+    <string name="send_email">Send Email</string>
+    <string name="forgot_password">Forgot password</string>
+    <string name="field_empty">Field is empty</string>
+    <string name="email_reset">Reset email has been sent successfully \nto: %s</string>
+    <string name="error_email_pass_reset">Error sending Reset email \nto this email: %s</string>
+    <string name="fb_auth_wrong">Error while logging in with Facebook</string>
+    <string name="welcome">Welcome</string>
+    <string name="exiting">Exiting</string>
+    <string name="are_you_sure">Are you sure to exit?</string>
+    <string name="ok">OK</string>
+    <string name="cancel">cancel</string>
+    <string name="pass">Password</string>
+    <string name="conf_pass">Confirm Password</string>
+    <string name="last_name">Last name</string>
+    <string name="first_name">First name</string>
+    <string name="empty_pass">Empty password!</string>
+    <string name="empty_conf_pass">Empty confirm password</string>
+    <string name="conf_pass_mismatch">Password misMatch</string>
+    <string name="email_conf">Email sent to confirm successfully</string>
+    <string name="email_conf_fail">Email confirmation failed</string>
 
 </resources>

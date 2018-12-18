@@ -18,29 +18,32 @@
             android:orientation="vertical"
             android:paddingEnd="@dimen/activity_horizontal_margin"
             android:paddingStart="@dimen/activity_horizontal_margin">
-
             <ImageView
-                android:layout_width="200dp"
-                android:layout_height="200dp"
+                android:layout_width="150dp"
+                android:layout_height="150dp"
                 android:layout_gravity="center_horizontal"
                 android:layout_marginTop="16dp"
                 android:contentDescription="@string/app_name"
                 android:src="@drawable/ic_launcher" />
-
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_horizontal"
-                android:layout_marginTop="8dp"
                 android:text="@string/app_name"
                 android:textColor="@color/white"
                 android:textSize="30sp"
-                android:textStyle="bold" />
-
+                android:textStyle="bold"
+                android:layout_marginBottom="16dp"/>
+            <com.facebook.login.widget.LoginButton
+                android:id="@+id/fb_login_button"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textSize="20sp"
+                />
             <android.support.v7.widget.CardView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="24dp"
+                android:layout_marginTop="16dp"
                 app:cardBackgroundColor="@color/grey"
                 app:cardCornerRadius="2dp">
 
@@ -48,11 +51,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:orientation="vertical"
-                    android:paddingBottom="5dp"
-                    android:paddingEnd="5dp"
-                    android:paddingStart="5dp"
-                    android:paddingTop="5dp">
-
+                    android:padding="5dp">
                     <LinearLayout
                         android:id="@+id/emailfield"
                         android:layout_width="match_parent"
@@ -60,7 +59,6 @@
                         android:layout_gravity="center_horizontal"
                         android:background="@color/white"
                         android:orientation="horizontal">
-
                         <ImageView
                             android:id="@+id/img1"
                             android:layout_width="35dp"
@@ -68,7 +66,6 @@
                             android:layout_gravity="center"
                             android:contentDescription="@string/email_hint"
                             android:src="@drawable/ic_person_black_24dp" />
-
                         <EditText
                             android:id="@+id/emailText"
                             android:layout_width="match_parent"
@@ -83,8 +80,6 @@
                             android:paddingStart="8dp" />
 
                     </LinearLayout>
-
-
                     <LinearLayout
                         android:id="@+id/passfield"
                         android:layout_width="match_parent"
@@ -120,17 +115,26 @@
                 android:id="@+id/login"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="24dp"
+                android:layout_marginTop="16dp"
                 android:background="@drawable/rounded_button"
                 android:text="@string/login"
                 android:textColor="@color/white"
-                android:textSize="24sp" />
-
+                android:textSize="20sp" />
             <TextView
-                android:id="@+id/forgotpass"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="16dp"
+                android:gravity="center_horizontal"
+                android:text="@string/forgot_password"
+                android:textColor="@android:color/white"
+                android:padding="8dp"
+                android:textSize="16sp"
+                android:id="@+id/forgot_pass"
+                android:clickable="true"
+                android:focusable="true"
+                android:background="?attr/selectableItemBackground"/>
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
                 android:gravity="center_horizontal"
                 android:text="@string/or"
                 android:textColor="@color/white"
@@ -140,12 +144,11 @@
                 android:id="@+id/signup"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="24dp"
                 android:layout_marginTop="16dp"
                 android:background="@drawable/rounded_button"
                 android:text="@string/sign_up"
                 android:textColor="@color/white"
-                android:textSize="24sp" />
+                android:textSize="20sp" />
 
 
         </LinearLayout>

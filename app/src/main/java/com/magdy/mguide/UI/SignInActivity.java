@@ -2,6 +2,7 @@ package com.magdy.mguide.UI;
 
 import android.app.ProgressDialog;
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.PersistableBundle;
 import android.support.annotation.NonNull;
@@ -13,13 +14,29 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.facebook.AccessToken;
+import com.facebook.CallbackManager;
+import com.facebook.FacebookCallback;
+import com.facebook.FacebookException;
+import com.facebook.FacebookSdk;
+import com.facebook.appevents.AppEventsLogger;
+import com.facebook.login.LoginResult;
+import com.facebook.login.widget.LoginButton;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
+import com.google.firebase.auth.AuthCredential;
 import com.google.firebase.auth.AuthResult;
+import com.google.firebase.auth.FacebookAuthProvider;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 import com.magdy.mguide.R;
+
+import java.util.Objects;
 
 public class SignInActivity extends AppCompatActivity implements View.OnClickListener {
 
@@ -33,23 +50,44 @@ public class SignInActivity extends AppCompatActivity implements View.OnClickLis
     DatabaseReference mDatabase;
     FirebaseAuth mauth;
     FirebaseAuth.AuthStateListener mauthListener;
-
+    CallbackManager callbackManager ;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_sign_in);
 
+        FacebookSdk.sdkInitialize(getApplicationContext());
+        AppEventsLogger.activateApp(this);
+        callbackManager = CallbackManager.Factory.create();
+        LoginButton loginButton = findViewById(R.id.fb_login_button);
+        loginButton.setReadPermissions("email","public_profile","user_friends");
+        loginButton.registerCallback(callbackManager, new FacebookCallback<LoginResult>() {
+            @Override
+            public void onSuccess(LoginResult loginResult) {
+                handleFacebookAccessToken(loginResult.getAccessToken());
+            }
 
+            @Override
+            public void onCancel() {
+                // App code
+            }
+
+            @Override
+            public void onError(FacebookException exception) {
+                // App code
+            }
+        });
         mDatabase = FirebaseDatabase.getInstance().getReference().child("users");
         progressDialog = new ProgressDialog(this);
 
-        loginBut = (Button) findViewById(R.id.login);
-        signupBut = (Button) findViewById(R.id.signup);
+        loginBut = findViewById(R.id.login);
+        signupBut = findViewById(R.id.signup);
 
-        forgotT = (TextView) findViewById(R.id.forgotpass);
+        forgotT = findViewById(R.id.forgot_pass);
+        forgotT.setOnClickListener(this);
 
-        emailt = (EditText) findViewById(R.id.emailText);
-        passt = (EditText) findViewById(R.id.passwordText);
+        emailt = findViewById(R.id.emailText);
+        passt = findViewById(R.id.passwordText);
 
         if (savedInstanceState != null) {
             emailt.setText(savedInstanceState.getString(EMAIL_TEXT));
@@ -69,12 +107,70 @@ public class SignInActivity extends AppCompatActivity implements View.OnClickLis
             }
         };
     }
+    void userUploadData(FirebaseUser user) {
+        assert user != null;
+        int x = Objects.requireNonNull(user.getDisplayName()).indexOf(' ');
+        String personGivenName = user.getDisplayName().substring(0, x);
+        String personFamilyName = user.getDisplayName().substring(x + 1, user.getDisplayName().length());
+        String personEmail = user.getEmail();
+        Uri personPhoto = user.getPhotoUrl();
+        if (mauth.getCurrentUser() != null) {
+            DatabaseReference usermDatabase = mDatabase.child(mauth.getCurrentUser().getUid());
+            usermDatabase.child("info/first_name").setValue(personGivenName);
+            usermDatabase.child("info/last_name").setValue(personFamilyName);
+            usermDatabase.child("info/email").setValue(personEmail);
+            assert personPhoto != null;
+            usermDatabase.child("info/image").setValue(personPhoto.toString());
+        }
+    }
+    void welcome()
+    {
+        Toast.makeText(SignInActivity.this,getString(R.string.welcome),
+                Toast.LENGTH_SHORT).show();
+    }
+    private void handleFacebookAccessToken(AccessToken accessToken) {
+        AuthCredential credential = FacebookAuthProvider.getCredential(accessToken.getToken());
+        mauth.signInWithCredential(credential)
+                .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
+                    @Override
+                    public void onComplete(@NonNull Task<AuthResult> task) {
+                        if (task.isSuccessful()) {
+                            // Sign in success, update UI with the signed-in user's information
+                            if (mauth.getCurrentUser() != null) {
+                                FirebaseDatabase.getInstance().getReference().child("users").child(mauth.getCurrentUser().getUid()).child("info").addValueEventListener(new ValueEventListener() {
+                                    @Override
+                                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                                        Boolean b = dataSnapshot.child("is_first").getValue(Boolean.class);
+                                        if (b==null)
+                                        {
+                                            userUploadData(mauth.getCurrentUser());
+                                        }
+                                    }
+                                    @Override
+                                    public void onCancelled(@NonNull DatabaseError databaseError) {
+                                    }
+                                });
+                                welcome();
+                            }
+                        } else {
+                            // If sign in fails, display a message to the user.
+                            Toast.makeText(getBaseContext(),getString(R.string.fb_auth_wrong),Toast.LENGTH_SHORT).show();
+                        }
+
+                    }
+                });
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        callbackManager.onActivityResult(requestCode, resultCode, data);
+        super.onActivityResult(requestCode, resultCode, data);
+    }
 
     @Override
     protected void onStart() {
         super.onStart();
         mauth.addAuthStateListener(mauthListener);
-
     }
 
     @Override
@@ -96,6 +192,10 @@ public class SignInActivity extends AppCompatActivity implements View.OnClickLis
             intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
             startActivity(intent);
 
+        }
+        else if(view==forgotT)
+        {
+            startActivity(new Intent(getBaseContext(),ForgetPassActivity.class));
         }
     }
 
@@ -120,7 +220,6 @@ public class SignInActivity extends AppCompatActivity implements View.OnClickLis
                         startActivity(i);
                         finish();
                     }
-
                 }
             });
 

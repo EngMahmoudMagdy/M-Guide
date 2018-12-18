@@ -1,13 +1,18 @@
 package com.magdy.mguide.UI;
 
 
+import android.annotation.SuppressLint;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.pm.PackageInfo;
+import android.content.pm.PackageManager;
+import android.content.pm.Signature;
 import android.content.res.Configuration;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.CoordinatorLayout;
@@ -17,6 +22,7 @@ import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Base64;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -30,15 +36,25 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.magdy.mguide.Data.Constants;
 import com.magdy.mguide.Data.Contract;
 import com.magdy.mguide.Information;
 import com.magdy.mguide.ListInfoListener;
+import com.magdy.mguide.NotiService;
 import com.magdy.mguide.R;
+import com.squareup.picasso.Picasso;
+
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
+import java.util.Locale;
+
+import de.hdodenhof.circleimageview.CircleImageView;
 
 
 public class MainActivity extends AppCompatActivity implements ListInfoListener {
 
     public boolean mTwoPane;
+    CircleImageView headerImage ;
     TextView navName, navEmail;
     FirebaseAuth mauth;
     FirebaseAuth.AuthStateListener mauthListener;
@@ -49,17 +65,31 @@ public class MainActivity extends AppCompatActivity implements ListInfoListener 
     Snackbar snackbar;
     private DrawerLayout mDrawer;
     private Toolbar toolbar;
-    private NavigationView nvDrawer;
     private ActionBarDrawerToggle drawerToggle;
     private Menu menu;
-
+    private void printKeyHash() {
+        // Add code to print out the key hash
+        try {
+            @SuppressLint("PackageManagerGetSignatures") PackageInfo info = getPackageManager().getPackageInfo("com.magdy.mguide", PackageManager.GET_SIGNATURES);
+            for (Signature signature : info.signatures) {
+                MessageDigest md = MessageDigest.getInstance("SHA");
+                md.update(signature.toByteArray());
+                Log.w("KeyHash:", Base64.encodeToString(md.digest(), Base64.DEFAULT));
+            }
+        } catch (PackageManager.NameNotFoundException e) {
+            Log.e("KeyHash:", e.toString());
+        } catch (NoSuchAlgorithmException e) {
+            Log.e("KeyHash:", e.toString());
+        }
+    }
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        printKeyHash();
         Log.w("creating Main ", " here");
-        coordinatorLayout = (CoordinatorLayout) findViewById(R.id.coordinator);
-        FrameLayout flPanel2 = (FrameLayout) findViewById(R.id.fl_panel2);
+        coordinatorLayout = findViewById(R.id.coordinator);
+        FrameLayout flPanel2 = findViewById(R.id.fl_panel2);
 
         mTwoPane = (null != flPanel2);
 
@@ -78,22 +108,25 @@ public class MainActivity extends AppCompatActivity implements ListInfoListener 
         }
 
 
-        toolbar = (Toolbar) findViewById(R.id.toolbar);
+        toolbar = findViewById(R.id.toolbar);
         toolbar.setTitle(getString(R.string.app_name));
 
-        mDrawer = (DrawerLayout) findViewById(R.id.drawer_layout);//layout itself
-        nvDrawer = (NavigationView) findViewById(R.id.nvView); //navigation
+        mDrawer = findViewById(R.id.drawer_layout);//layout itself
+        NavigationView nvDrawer = findViewById(R.id.nvView);
         menu = nvDrawer.getMenu();
         View header = nvDrawer.inflateHeaderView(R.layout.nav_header);
-        navEmail = (TextView) header.findViewById(R.id.emailtext);
-        navName = (TextView) header.findViewById(R.id.uname);
+        navEmail = header.findViewById(R.id.emailtext);
+        navName = header.findViewById(R.id.uname);
+        headerImage = header.findViewById(R.id.imageheader);
         mDrawer.addDrawerListener(drawerToggle);
 
 
         setupDrawerContent(nvDrawer);
         drawerToggle = setupDrawerToggle();
         drawerToggle.setDrawerIndicatorEnabled(true);
-
+        Intent mServiceIntent = new Intent(getBaseContext(), NotiService.class);
+        mServiceIntent.setData(Uri.parse("data"));
+        startService(mServiceIntent);
         snackbar = Snackbar
                 .make(coordinatorLayout, getString(R.string.no_movies_inter), Snackbar.LENGTH_INDEFINITE)
                 .setAction(getResources().getString(R.string.retry), new View.OnClickListener() {
@@ -137,8 +170,11 @@ public class MainActivity extends AppCompatActivity implements ListInfoListener 
                 } else {
                     if (mauth.getCurrentUser() != null) {
                         DataSnapshot userSnapShot = dataSnapshot.child(mauth.getCurrentUser().getUid());
-                        String name = userSnapShot.child("info").child("name").getValue(String.class);
-                        String email = userSnapShot.child("info").child("email").getValue(String.class);
+                        String name = String.format(Locale.getDefault(),"%s %s",userSnapShot.child(Constants.INFO).child(Constants.FIRST_NAME).getValue(String.class),userSnapShot.child(Constants.INFO).child(Constants.LAST_NAME).getValue(String.class));
+                        String email = userSnapShot.child(Constants.INFO).child(Constants.EMAIL).getValue(String.class);
+                        String pic = userSnapShot.child(Constants.INFO).child(Constants.IMAGE).getValue(String.class);
+                        if (pic!=null)
+                            Picasso.with(getBaseContext()).load(pic).into(headerImage);
                         navName.setText(name);
                         navEmail.setText(email);
                     }
