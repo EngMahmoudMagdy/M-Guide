@@ -1,7 +1,7 @@
 # Capstone: M-Guide
 this is __Movies Guide__ App called **M-Guide**
 	this app can show you the latest popular movies and the Most rated movies too
-<a href='https://play.google.com/store/apps/details?id=com.magdy.mguide&pcampaignid=MKT-Other-global-all-co-prtnr-py-PartBadge-Mar2515-1'><img width='220px' alt='Get it on Google Play' src='https://play.google.com/intl/en_us/badges/images/generic/en_badge_web_generic.png'/></a>	
+<a target='_blank' href='https://play.google.com/store/apps/details?id=com.magdy.mguide&pcampaignid=MKT-Other-global-all-co-prtnr-py-PartBadge-Mar2515-1'><img width='220px' alt='Get it on Google Play' src='https://play.google.com/intl/en_us/badges/images/generic/en_badge_web_generic.png'/></a>	
 	
 * ## First
 	
